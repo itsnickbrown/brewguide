@@ -52,14 +52,57 @@ const ORIGINS = {
 
 const VARIETALS = {
   "": "Not sure / not listed",
+  heirloom: "Ethiopian landrace (heirloom, 74110)",
   gesha: "Gesha (Geisha)",
   sl28: "SL28 / SL34",
+  ruiru: "Ruiru 11 / Batian",
+  sl14: "SL14 / Bugisu",
   pinkbourbon: "Pink Bourbon",
-  pacamara: "Pacamara",
-  heirloom: "Ethiopian landrace (heirloom)",
-  bourbon: "Bourbon",
-  caturra: "Caturra / Castillo / Catuai",
+  sidra: "Sidra",
+  castillo: "Castillo / Colombia",
+  caturra: "Caturra",
+  catuai: "Catuai",
+  bourbon: "Bourbon (red or yellow)",
   typica: "Typica",
+  mundonovo: "Mundo Novo",
+  pacas: "Pacas",
+  pacamara: "Pacamara",
+  villasarchi: "Villa Sarchi",
+  parainema: "Parainema",
+  maragogype: "Maragogype",
+  tabi: "Tabi",
+  kent: "Kent",
+  s795: "S795",
+  ateng: "Ateng / Tim Tim",
+  arusha: "Arusha",
+  yemenia: "Yemenia (Udaini, Jaadi)",
+};
+
+/* Varietals you'll actually see on bags from each origin. */
+const ORIGIN_VARS = {
+  ethiopia: ["heirloom","gesha"],
+  kenya: ["sl28","ruiru"],
+  colombia: ["castillo","caturra","pinkbourbon","gesha","typica","tabi","sidra"],
+  brazil: ["catuai","mundonovo","bourbon"],
+  guatemala: ["bourbon","caturra","catuai","typica","pacamara","gesha"],
+  costarica: ["caturra","catuai","villasarchi","gesha"],
+  panama: ["gesha","catuai","caturra","typica","pacamara"],
+  honduras: ["catuai","caturra","parainema","bourbon","pacas","gesha"],
+  elsalvador: ["bourbon","pacas","pacamara","gesha"],
+  nicaragua: ["caturra","catuai","maragogype","pacamara","gesha"],
+  mexico: ["typica","bourbon","caturra","catuai"],
+  peru: ["typica","caturra","bourbon","gesha"],
+  bolivia: ["caturra","typica","gesha"],
+  ecuador: ["typica","sidra","caturra","gesha"],
+  rwanda: ["bourbon"],
+  burundi: ["bourbon"],
+  tanzania: ["bourbon","kent","sl28"],
+  uganda: ["sl14","sl28"],
+  sumatra: ["ateng","typica"],
+  png: ["typica","bourbon","arusha"],
+  yemen: ["yemenia"],
+  india: ["s795","kent"],
+  blend: [],
 };
 
 const PROC_NAME = { washed: "Washed", natural: "Natural", honey: "Honey", anaerobic: "Anaerobic or experimental",
@@ -75,7 +118,7 @@ function familyFor(s) {
   let why;
   if (s.notes && s.notes.length) { fam = s.notes[0]; why = `You picked ${FAMILIES[fam].name.toLowerCase()} notes from the bag.`; }
   else if (s.varietal === "gesha") { fam = "floral"; why = "Gesha is known for florals, so the recipe protects them."; }
-  else if (s.varietal === "sl28" && s.process === "washed") { fam = "citrus"; why = "Washed SL28 and SL34 lots tend toward bright, juicy acidity."; }
+  else if ((s.varietal === "sl28" || s.varietal === "ruiru") && s.process === "washed") { fam = "citrus"; why = "Washed SL28 lots and their Kenyan descendants tend toward bright, juicy acidity."; }
   else if (s.process === "natural" || s.process === "anaerobic") { fam = o.natural || "berry"; why = `${PROC_NAME[s.process]} coffees from ${o.name} usually lean ${FAMILIES[fam].name.toLowerCase()}.`; }
   else if (s.process === "honey" || s.process === "pulped natural") { fam = o.washed === "choc" || o.washed === "heavy" ? "choc" : "stone"; why = `${PROC_NAME[s.process]} coffees keep more sweetness, so the recipe builds for a full, sweet middle.`; }
   else if (s.process === "wet-hulled" || s.process === "monsooned") { fam = "heavy"; why = `${PROC_NAME[s.process]} coffees are low acid and heavy, so the recipe builds for body.`; }
@@ -383,7 +426,10 @@ if (typeof document !== "undefined") (function () {
     $("region").innerHTML = opt("", o.regions.length ? "Any region" : "Not needed", s.region) + o.regions.map(r => opt(r, r, s.region)).join("");
     $("region").disabled = !o.regions.length;
     $("process").innerHTML = o.procs.map(p => opt(p, PROC_NAME[p], s.process)).join("");
-    $("varietal").innerHTML = Object.entries(VARIETALS).map(([k, v]) => opt(k, v, s.varietal)).join("");
+    const vs = ORIGIN_VARS[s.origin] || [];
+    if (s.varietal && !vs.includes(s.varietal)) s.varietal = "";
+    $("varietal").innerHTML = opt("", VARIETALS[""], s.varietal) + vs.map(k => opt(k, VARIETALS[k], s.varietal)).join("");
+    $("varietal").disabled = !vs.length;
     $("age").innerHTML = Object.entries(AGES).map(([k, v]) => opt(k, v, s.age)).join("");
     const gs = Object.entries(GRINDERS);
     $("grinder").innerHTML = gs.map(([k, g]) => opt(k, g.name, s.grinder)).join("");
