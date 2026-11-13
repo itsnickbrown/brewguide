@@ -166,7 +166,7 @@ const GRINDERS = {
   "timemore-c2": { name: "Timemore Chestnut C2", unit: "clicks", min: 0, max: 36, step: 1, roastStep: 1, micro: 1,
     base: { aidenSingle: 18, aidenBatch: 20, v60: 18, kalita: 19, chemex: 21, espresso: null },
     fmt: "clicks", note: "Count clicks from fully closed. Timemore's manual puts pour over at 18 to 24 clicks. The steps are too coarse for real espresso.", buy: "timemore-c2" },
-  "timemore-078s": { name: "Timemore Sculptor 078S", unit: "setting", min: 0, max: 20, step: 0.25, roastStep: { espresso: 0.5, other: 1 }, micro: 0.25,
+  "timemore-078s": { name: "Timemore Sculptor 078S", unit: "setting", min: 0, max: 18, step: 0.25, roastStep: { espresso: 0.5, other: 1 }, micro: 0.25,
     base: { aidenSingle: 10.5, aidenBatch: 11.5, v60: 10, kalita: 10.5, chemex: 12, espresso: 2.5 },
     fmt: "dec", note: "Stepless dial. Timemore's manual puts espresso at 1 to 4, pour over at 8 to 13 and French press at 14 and up. For espresso, higher RPM runs the shot faster and lower RPM slows it down.", buy: "timemore-078s" },
   "niche-zero": { name: "Niche Zero", unit: "setting", min: 0, max: 50, step: 1, roastStep: { espresso: 2, other: 4 }, micro: 1,
