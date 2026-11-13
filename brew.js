@@ -137,7 +137,10 @@ const GRINDERS = {
   "fellow-ode-2": { name: "Fellow Ode Gen 2", unit: "setting", min: 1, max: 11, step: 1/3, roastStep: 2/3, micro: 1/3,
     base: { aidenSingle: 5 + 1/3, aidenBatch: 7, v60: 5, kalita: 5 + 1/3, chemex: 6 + 2/3, espresso: null },
     fmt: "ode", note: "The dial has 11 numbers with two notches between each. Fellow says the Ode is not for espresso.", buy: "fellow-ode-2" },
-  "fellow-opus": { name: "Fellow Opus", unit: "setting", min: 1, max: 11, step: 0.25, roastStep: 0.5, micro: 0.25,
+  "fellow-opus-2": { name: "Fellow Opus 2 (Gen 2)", unit: "setting", min: 0, max: 10, step: 0.1, roastStep: { espresso: 0.25, other: 0.5 }, micro: 0.1,
+    base: { aidenSingle: 5, aidenBatch: 7, v60: 6, kalita: 6.5, chemex: 7.5, espresso: 1.2 },
+    fmt: "dec", note: "Stepless dial from 0 (fine) to 10 (coarse). Fellow's own recipes run about 4 to 6 for Aiden single serve, 6 to 10 for batch, 5.5 to 7 for pour over and 0.8 to 1.5 for espresso.", buy: "fellow-opus-2" },
+  "fellow-opus": { name: "Fellow Opus (original)", unit: "setting", min: 1, max: 11, step: 0.25, roastStep: 0.5, micro: 0.25,
     base: { aidenSingle: 4.75, aidenBatch: 6, v60: 4.5, kalita: 4.75, chemex: 5.5, espresso: 1.5 },
     fmt: "dec", note: "Outer ring sets the number. Use the inner ring for fine espresso steps. Fellow suggests the higher end of a range for darker roasts.", buy: "fellow-opus" },
   "baratza-encore": { name: "Baratza Encore", unit: "setting", min: 0, max: 40, step: 1, roastStep: 2, micro: 1,
@@ -381,6 +384,7 @@ function shortName(s, fam) {
 const GEAR = {
   "fellow-aiden":       { name: "Fellow Aiden", q: "Fellow Aiden precision coffee maker", why: "The brewer these profiles are built for." },
   "fellow-ode-2":       { name: "Fellow Ode Gen 2", q: "Fellow Ode Brew Grinder Gen 2", why: "Flat burr grinder built for filter coffee. Great match for the Aiden and pour over." },
+  "fellow-opus-2":      { name: "Fellow Opus 2", q: "Fellow Opus 2 conical burr grinder", why: "Fellow's newer all-rounder. Stepless, bigger burrs, espresso to cold brew." },
   "fellow-opus":        { name: "Fellow Opus", q: "Fellow Opus conical burr grinder", why: "One grinder for espresso and filter at a fair price." },
   "baratza-encore":     { name: "Baratza Encore", q: "Baratza Encore conical burr grinder", why: "The classic starter burr grinder for drip and pour over." },
   "baratza-encore-esp": { name: "Baratza Encore ESP", q: "Baratza Encore ESP grinder", why: "Starter grinder with real espresso steps and good filter range." },
@@ -475,12 +479,12 @@ if (typeof document !== "undefined") (function () {
     // gear suggestions that fit the situation
     let gear = [];
     const gr = R.grind || {};
-    if (gr.blade) gear = MODE === "espresso" ? ["baratza-encore-esp", "fellow-opus", "breville-sgp"] : ["oxo-8717000", "baratza-encore", "fellow-ode-2", "timemore-c2"];
-    else if (gr.none && MODE === "espresso") gear = ["baratza-encore-esp", "fellow-opus", "niche-zero"];
-    else if (gr.warn) gear = ["baratza-encore-esp", "fellow-opus", "breville-sgp"];
-    const base = MODE === "aiden" ? ["fellow-aiden", "fellow-ode-2", "fellow-opus", "baratza-encore-esp", "scale", "oxo-8717000"]
+    if (gr.blade) gear = MODE === "espresso" ? ["baratza-encore-esp", "fellow-opus-2", "breville-sgp"] : ["oxo-8717000", "baratza-encore", "fellow-ode-2", "timemore-c2"];
+    else if (gr.none && MODE === "espresso") gear = ["baratza-encore-esp", "fellow-opus-2", "niche-zero"];
+    else if (gr.warn) gear = ["baratza-encore-esp", "fellow-opus-2", "breville-sgp"];
+    const base = MODE === "aiden" ? ["fellow-aiden", "fellow-ode-2", "fellow-opus-2", "baratza-encore-esp", "scale", "oxo-8717000"]
       : MODE === "pour" ? ["hario-v60", "stagg-ekg", "scale", "comandante-c40", "fellow-ode-2", "kalita"]
-      : ["bambino", "baratza-encore-esp", "niche-zero", "wdt", "scale", "fellow-opus"];
+      : ["bambino", "baratza-encore-esp", "niche-zero", "wdt", "scale", "fellow-opus-2"];
     const ids = [...new Set(gear.concat(base))].filter(i => i !== s.grinder).slice(0, 6);
     $("gear").innerHTML = gearCard(ids, gear.length ? "Upgrades that fix this" : "Gear for this recipe") +
       `<div class="beans"><div><b>Want more coffees like this one?</b><span>Trade matches you with roasters by flavor and ships beans fresh.</span></div><a class="btn primary" href="${esc(BEANS_LINK())}" target="_blank" rel="sponsored nofollow noopener" data-gear="trade">Find beans</a></div>`;
