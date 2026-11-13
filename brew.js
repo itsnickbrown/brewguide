@@ -241,20 +241,42 @@ function aidenRecipe(s) {
   a.t = cap(a.t);
   const batch = s.size === "batch";
   const g = grindFor(s.grinder, batch ? "aidenBatch" : "aidenSingle", s, fam);
-  const rows = [
-    ["Brew temperature", temp(a.t)],
-    ["Ratio", `1:${a.r}`],
-    ["Bloom", `On. Ratio 1:${a.bR}, ${a.bS} seconds, ${a.bT && cap(a.t + a.bT) !== a.t ? temp(cap(a.t + a.bT)) : "same temp as brew"}`],
+  const bloomT = cap(a.t + (a.bT || 0));
+  const singleT = Array.from({ length: a.p }, (_, i) => i === a.p - 1 && a.last ? cap(a.t + a.last) : a.t);
+  const batchT = a.t;
+  const all = [bloomT, batchT, ...singleT];
+  const mixed = all.some(x => x !== all[0]);
+  const sections = [
+    { title: "Profile", rows: [
+      ["Temperature", mixed ? "Mixed (set per pulse below)" : temp(a.t)],
+      ["Coffee-to-Water Ratio", `1:${a.r}`],
+      ["Cold Brew", "Off"],
+    ] },
+    { title: "Bloom", rows: [
+      ["Bloom", "On"],
+      ["Bloom Ratio", `1:${a.bR}`],
+      ["Bloom Time", `${a.bS}s`],
+      ["Bloom Temperature", temp(bloomT)],
+    ] },
+    { title: `Single Serve Pulses${batch ? "" : " (what you'll brew)"}`, rows: [
+      ["Number of Pulses", `${a.p}`],
+      ["Time between pulses", `${a.gap}s`],
+      ...singleT.map((x, i) => [`Pulse ${i + 1} temperature`, temp(x)]),
+    ] },
+    { title: `Batch Pulses${batch ? " (what you'll brew)" : ""}`, rows: [
+      ["Number of Pulses", "1"],
+      ["Time between pulses", `${a.gap}s`],
+      ["Pulse 1 temperature", temp(batchT)],
+    ] },
+    { title: "Brewer and grinder", rows: [
+      ["Basket", batch ? "Flat bottom, shower head on the three blue dots" : "Cone, shower head on the one green dot"],
+      ["Grind", g.text],
+    ] },
   ];
-  if (batch) rows.push(["Pulses", "1 (batch brew uses one pulse)"]);
-  else {
-    rows.push(["Pulses", `${a.p}, ${a.gap} seconds apart`]);
-    if (a.last) rows.push(["Last pulse temp", `${temp(cap(a.t + a.last))}${a.last < 0 ? " to keep the finish clean" : " for a fuller finish"}`]);
-  }
-  rows.push(["Basket", batch ? "Flat bottom, shower head on the three blue dots" : "Cone, shower head on the one green dot"]);
-  rows.push(["Grind", g.text]);
+  if (a.last) why2.push(["Last pulse", a.last < 0 ? `${Math.abs(a.last)}°F cooler to keep the finish clean.` : `${a.last}°F hotter for a fuller finish.`]);
+  const rows = sections.flatMap(x => x.rows);
   const name = shortName(s, fam);
-  return { fam, why, why2: famWhy(fam, "aiden").concat(why2), rows, grind: g, name,
+  return { fam, why, why2: famWhy(fam, "aiden").concat(why2), rows, sections, grind: g, name,
     taste: tasteChecks(fam), fixes: AIDEN_FIXES, method: "aiden" };
 }
 function famWhy(fam, m) {
@@ -467,7 +489,7 @@ if (typeof document !== "undefined") (function () {
     let html = `<div class="res-head"><div><div class="eyebrow">${MODE === "aiden" ? `Profile name: ${esc(R.name)}` : MODE === "pour" ? esc(R.dripper) : "Espresso"}</div><h2>${esc(title)}</h2>
       <p class="fam">Building toward <b>${esc(FAMILIES[R.fam].name.toLowerCase())}</b>. ${esc(R.why)}</p></div>
       <button class="btn" type="button" id="share">Copy link</button></div>`;
-    html += table(R.rows);
+    html += R.sections ? R.sections.map(x => `<h3 class="rt-h">${esc(x.title)}</h3>` + table(x.rows)).join("") : table(R.rows);
     if (R.grind) {
       const gr = R.grind;
       if (gr.blade || gr.none) html += `<div class="callout warn"><b>${esc(gr.text)}</b> ${esc(gr.note || "")}</div>`;

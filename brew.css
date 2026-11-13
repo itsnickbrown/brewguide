@@ -61,3 +61,6 @@ table.fix td{padding:9px 12px;border-top:1px solid #e6e6ea}
 .fb-form select,.fb-form textarea,.fb-form input{font:inherit;font-size:16px;padding:11px 12px;border:1px solid var(--line);border-radius:12px;background:#fff;width:100%;color:var(--ink)}
 .fb-form .btn{align-self:flex-start}
 @media(max-width:860px){.fb{grid-template-columns:1fr}}
+h3.rt-h{margin:18px 0 2px;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+table.rt tr:last-child td{color:inherit;font-size:17px}
+table.rt:last-of-type tr:last-child td{color:var(--accent-ink);font-size:19px}
