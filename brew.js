@@ -169,6 +169,9 @@ const GRINDERS = {
   "timemore-078s": { name: "Timemore Sculptor 078S", unit: "setting", min: 0, max: 18, step: 0.25, roastStep: { espresso: 0.5, other: 1 }, micro: 0.25,
     base: { aidenSingle: 10.5, aidenBatch: 11.5, v60: 10, kalita: 10.5, chemex: 12, espresso: 2.5 },
     fmt: "dec", note: "Stepless dial. Timemore's manual puts espresso at 1 to 4, pour over at 8 to 13 and French press at 14 and up. For espresso, higher RPM runs the shot faster and lower RPM slows it down.", buy: "timemore-078s" },
+  "1zpresso-k-ultra": { name: "1Zpresso K-Ultra", unit: "setting", min: 0, max: 15, step: 0.1, roastStep: { espresso: 0.2, other: 0.4 }, micro: 0.1,
+    base: { aidenSingle: 7.8, aidenBatch: 8.6, v60: 7.5, kalita: 8, chemex: 8.8, espresso: 2.6 },
+    fmt: "kultra", note: "Read it as number.click on the outer dial, so 7.5 means the dot on 7 plus 5 clicks. Each click is 20 microns. Common starting points are about 2.5 for espresso and 7 to 9.5 for pour over.", buy: "1zpresso-k-ultra" },
   "niche-zero": { name: "Niche Zero", unit: "setting", min: 0, max: 50, step: 1, roastStep: { espresso: 2, other: 4 }, micro: 1,
     base: { aidenSingle: 45, aidenBatch: 50, v60: 45, kalita: 47, chemex: 50, espresso: 15 },
     fmt: "int", note: "Stepless dial. Niche suggests about 15 for espresso and 35 to 50 for V60. Units vary, so treat these as a start.", buy: "niche-zero" },
@@ -184,6 +187,7 @@ function fmtSetting(g, v) {
   if (g.fmt === "ode") { const whole = Math.floor(r + 1e-6); const n = Math.round((r - whole) * 3); return n === 0 ? `${whole}` : `${whole}, ${n} notch${n > 1 ? "es" : ""} coarser`; }
   if (g.fmt === "oxo") { const whole = Math.floor(r + 1e-6); return r - whole > 0.25 ? `${whole}, one micro coarser` : `${whole}`; }
   if (g.fmt === "dec") return `${r}`;
+  if (g.fmt === "kultra") { const v = Math.round(r * 10) / 10; return v >= 10 ? `1 full turn, then ${(v - 10).toFixed(1)}` : v.toFixed(1); }
   if (g.fmt === "clicks") return `${Math.round(r)} clicks`;
   return `${Math.round(r)}`;
 }
@@ -394,6 +398,7 @@ const GEAR = {
   "comandante-c40":     { name: "Comandante C40 MK4", q: "Comandante C40 MK4 hand grinder", why: "The hand grinder most pour over recipes are written for." },
   "timemore-c2":        { name: "Timemore Chestnut C2", q: "Timemore Chestnut C2 manual grinder", why: "Best value hand grinder for pour over and French press." },
   "timemore-078s":      { name: "Timemore Sculptor 078S", q: "Timemore Sculptor 078S electric coffee grinder", why: "78mm flat burr grinder that handles espresso and pour over, with adjustable RPM." },
+  "1zpresso-k-ultra":   { name: "1Zpresso K-Ultra", q: "1Zpresso K-Ultra manual coffee grinder", why: "Hand grinder with an outside dial. Pour over to espresso in one turn." },
   "niche-zero":         { name: "Niche Zero", q: "Niche Zero grinder", why: "Single dose grinder known for espresso with low retention." },
   "hario-v60":          { name: "Hario V60 dripper", q: "Hario V60 02 dripper", why: "The standard cone for pour over." },
   "chemex":             { name: "Chemex 6-cup", q: "Chemex 6 cup classic", why: "Thick filters for a very clean cup. Brew two cups or more." },
