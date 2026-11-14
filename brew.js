@@ -183,7 +183,7 @@ const GRINDERS = {
 
 function roastSteps(g, method) { const r = g.roastStep; return typeof r === "number" ? r : (method === "espresso" ? r.espresso : r.other); }
 const ROAST_OFFSET = { light: -1, medium: 0, mediumdark: 1, dark: 2 };
-const FAMILY_GRIND = { floral: -1, citrus: 0, stone: 0, berry: 1, choc: 0, heavy: 1, roasty: 1 };
+const FAMILY_GRIND = { floral: -1, citrus: -1, stone: 0, berry: 1, choc: 0, heavy: 1, roasty: 1 };
 
 function fmtSetting(g, v) {
   const r = Math.round(v * 1000) / 1000;
@@ -211,6 +211,7 @@ function grindFor(gid, method, s, fam, extraMicro = 0) {
   if (method !== "espresso") v += (FAMILY_GRIND[fam] || 0) * g.micro;
   if (method === "espresso" && s.age === "fresh") v += g.micro; // very fresh coffee runs fast and gassy
   if (method === "espresso" && s.age === "old") v -= g.micro;
+  if (s.decaf === "yes") v -= (method === "espresso" ? 1 : 2) * g.micro; // decaf extracts fast, so grind finer
   v += extraMicro * g.micro;
   v = Math.min(g.max, Math.max(g.min, Math.round(v / g.step) * g.step));
   let note = g.note;
@@ -224,14 +225,16 @@ const temp = t => `${F(t)} (${C(t)})`;
 const g1 = n => Math.round(n * 10) / 10;
 
 /* ---------------- Fellow Aiden ---------------- */
+/* Calibrated against Fellow's own Drops profiles (Nov 2026): cooler pulses than most
+   pour over guides, a hotter bloom, and pulse temps that step down through the brew. */
 const AIDEN = {
-  floral: { t: 209, r: 16.5, bR: 3, bS: 40, bT: +2, p: 4, gap: 23, last: -4 },
-  citrus: { t: 207, r: 16.5, bR: 2.5, bS: 35, bT: 0, p: 4, gap: 25, last: 0 },
-  stone:  { t: 205, r: 16, bR: 2.5, bS: 35, bT: 0, p: 3, gap: 25, last: 0 },
-  berry:  { t: 203, r: 16, bR: 3, bS: 40, bT: 0, p: 2, gap: 28, last: 0 },
-  choc:   { t: 204, r: 16, bR: 2, bS: 30, bT: 0, p: 3, gap: 23, last: 0 },
-  heavy:  { t: 202, r: 15.5, bR: 2, bS: 30, bT: 0, p: 2, gap: 28, last: +3 },
-  roasty: { t: 197, r: 16.5, bR: 2, bS: 25, bT: -3, p: 2, gap: 23, last: 0 },
+  floral: { t: 198, r: 16.5, bR: 2.5, bS: 35, bT: +4, p: 4, gap: 23, fall: 4 },
+  citrus: { t: 200, r: 16.5, bR: 2, bS: 40, bT: +5, p: 3, gap: 28, fall: 6 },
+  stone:  { t: 201, r: 16, bR: 2.5, bS: 40, bT: +1, p: 3, gap: 28, fall: 3 },
+  berry:  { t: 196, r: 16, bR: 3, bS: 45, bT: +2, p: 2, gap: 28, fall: 2 },
+  choc:   { t: 202, r: 16, bR: 2.5, bS: 35, bT: +3, p: 3, gap: 23, fall: 2 },
+  heavy:  { t: 202, r: 15.5, bR: 2, bS: 30, bT: +2, p: 2, gap: 28, fall: 0 },
+  roasty: { t: 195, r: 16.5, bR: 2, bS: 25, bT: -2, p: 2, gap: 23, fall: 0 },
 };
 function aidenRecipe(s) {
   const { fam, why } = familyFor(s);
@@ -246,7 +249,7 @@ function aidenRecipe(s) {
   const batch = s.size === "batch";
   const g = grindFor(s.grinder, batch ? "aidenBatch" : "aidenSingle", s, fam);
   const bloomT = cap(a.t + (a.bT || 0));
-  const singleT = Array.from({ length: a.p }, (_, i) => i === a.p - 1 && a.last ? cap(a.t + a.last) : a.t);
+  const singleT = Array.from({ length: a.p }, (_, i) => cap(a.t - (a.p > 1 ? Math.round(a.fall * i / (a.p - 1)) : 0)));
   const batchT = a.t;
   const all = [bloomT, batchT, ...singleT];
   const mixed = all.some(x => x !== all[0]);
@@ -277,7 +280,9 @@ function aidenRecipe(s) {
       ["Grind", g.text],
     ] },
   ];
-  if (a.last) why2.push(["Last pulse", a.last < 0 ? `${Math.abs(a.last)}°F cooler to keep the finish clean.` : `${a.last}°F hotter for a fuller finish.`]);
+  if (a.fall) why2.push(["Pulse temps", `Step down from ${singleT[0]}°F to ${singleT[singleT.length - 1]}°F. Cooler late pulses keep the finish clean, the way Fellow builds its Drops profiles.`]);
+  if (bloomT > a.t) why2.push(["Bloom temp", `${bloomT - a.t}°F hotter than the pulses to open the coffee up early.`]);
+  if (s.decaf === "yes") why2.push(["Decaf", "Ground finer. Decaf beans are more porous and extract faster, so they need less room."]);
   const rows = sections.flatMap(x => x.rows);
   const name = shortName(s, fam);
   return { fam, why, why2: famWhy(fam, "aiden").concat(why2), rows, sections, grind: g, name,
@@ -285,10 +290,10 @@ function aidenRecipe(s) {
 }
 function famWhy(fam, m) {
   const t = {
-    floral: [["Temperature", "Hot water pulls the delicate aromatics out early."], ["Grind", "One step finer so the florals come through."], ["Pulses", "More, shorter pulses for clarity. The last one runs cooler to keep the tail clean."]],
-    citrus: [["Ratio", "A little open so the acidity reads clean, not sharp."], ["Pulses", "Four pulses to build a full middle under the brightness."]],
+    floral: [["Temperature", "Hot bloom to open it up, then cooler pulses so the florals stay delicate instead of turning bitter."], ["Grind", "One step finer so the florals come through."], ["Pulses", "More, shorter pulses for clarity."]],
+    citrus: [["Ratio", "A little open so the acidity reads clean, not sharp."], ["Temperature", "Pulses step down hard so the acidity stays juicy, not sharp."], ["Grind", "One step finer to build sweetness under the brightness."]],
     stone:  [["Everything", "Close to defaults. Stone fruit coffees need a full, even extraction to taste sweet instead of tart."]],
-    berry:  [["Temperature", "A bit lower so fermented fruit doesn't turn boozy."], ["Grind", "One step coarser and fewer pulses so the fruit stays distinct instead of muddy."]],
+    berry:  [["Temperature", "Cooler so fermented fruit doesn't turn boozy."], ["Bloom", "Long and wet to settle a coffee that's often full of gas."], ["Grind", "One step coarser and fewer pulses so the fruit stays distinct instead of muddy."]],
     choc:   [["Everything", "Close to defaults. Chocolate and caramel sit in the middle of the extraction."]],
     heavy:  [["Ratio", "Tighter for body."], ["Grind", "One step coarser, with longer gaps between pulses for contact time."]],
     roasty: [["Temperature", "Lower to keep ash and smoke down."], ["Grind", "Coarser so the bitter compounds stay in the grounds."]],
@@ -452,7 +457,7 @@ if (typeof document !== "undefined") (function () {
   const esc = x => String(x).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
   const opt = (v, t, sel) => `<option value="${esc(v)}"${v === sel ? " selected" : ""}>${esc(t)}</option>`;
 
-  const DEF = { origin: "ethiopia", region: "", process: "washed", varietal: "", roast: "light", age: "peak", notes: [],
+  const DEF = { origin: "ethiopia", region: "", process: "washed", varietal: "", roast: "light", age: "peak", decaf: "no", notes: [],
     grinder: MODE === "espresso" ? "baratza-encore-esp" : "fellow-ode-2", size: "single", dripper: "v60", cups: "1", basket: "unpressurized" };
   let s = { ...DEF };
   try { const h = new URLSearchParams(location.hash.slice(1)); h.forEach((v, k) => { if (k in DEF) s[k] = k === "notes" ? v.split(",").filter(x => FAMILIES[x]) : v; }); } catch (_) {}
@@ -471,6 +476,7 @@ if (typeof document !== "undefined") (function () {
     $("varietal").innerHTML = opt("", VARIETALS[""], s.varietal) + vs.map(k => opt(k, VARIETALS[k], s.varietal)).join("");
     $("varietal").disabled = !vs.length;
     $("age").innerHTML = Object.entries(AGES).map(([k, v]) => opt(k, v, s.age)).join("");
+    if ($("decaf")) $("decaf").value = s.decaf;
     const gs = Object.entries(GRINDERS);
     $("grinder").innerHTML = gs.map(([k, g]) => opt(k, g.name, s.grinder)).join("");
     document.querySelectorAll("[data-roast]").forEach(b => b.classList.toggle("on", b.dataset.roast === s.roast));
