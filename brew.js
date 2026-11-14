@@ -135,7 +135,7 @@ function familyFor(s) {
    finer and darker roasts move coarser by roastStep. micro is the smallest useful move. */
 const GRINDERS = {
   "fellow-ode-2": { name: "Fellow Ode Gen 2", unit: "setting", min: 1, max: 11, step: 1/3, roastStep: 2/3, micro: 1/3,
-    base: { aidenSingle: 5 + 1/3, aidenBatch: 7, v60: 5, kalita: 5 + 1/3, chemex: 6 + 2/3, espresso: null },
+    base: { aidenSingle: 4 + 1/3, aidenBatch: 7, v60: 5, kalita: 5 + 1/3, chemex: 6 + 2/3, espresso: null },
     fmt: "ode", note: "The dial has 11 numbers with two notches between each. Fellow says the Ode is not for espresso.", buy: "fellow-ode-2" },
   "fellow-opus-2": { name: "Fellow Opus 2 (Gen 2)", unit: "setting", min: 0, max: 10, step: 0.1, roastStep: { espresso: 0.25, other: 0.5 }, micro: 0.1,
     base: { aidenSingle: 5, aidenBatch: 7, v60: 6, kalita: 6.5, chemex: 7.5, espresso: 1.2 },
@@ -183,6 +183,10 @@ const GRINDERS = {
 
 function roastSteps(g, method) { const r = g.roastStep; return typeof r === "number" ? r : (method === "espresso" ? r.espresso : r.other); }
 const ROAST_OFFSET = { light: -1, medium: 0, mediumdark: 1, dark: 2 };
+/* Fellow's Drops barely move the Aiden grind with roast or flavor: on an Ode Gen 2 single serve
+   they average ~4.5 light, ~4.2 medium, ~4.8 medium dark, ~5 dark. So the Aiden uses smaller shifts. */
+const AIDEN_ROAST = { light: 0, medium: 0, mediumdark: 0.5, dark: 1 };
+const AIDEN_FAMILY_GRIND = { heavy: 1, roasty: 1 };
 const FAMILY_GRIND = { floral: -1, citrus: -1, stone: 0, berry: 1, choc: 0, heavy: 1, roasty: 1 };
 
 function fmtSetting(g, v) {
@@ -207,11 +211,12 @@ function grindFor(gid, method, s, fam, extraMicro = 0) {
   if (b == null) return { none: true, text: "This grinder isn't built for espresso.", note: g.note };
   let v = b;
   if (method === "espresso" && s.basket === "pressurized" && g.pressurized) v = g.pressurized;
-  v += ROAST_OFFSET[s.roast] * roastSteps(g, method);
-  if (method !== "espresso") v += (FAMILY_GRIND[fam] || 0) * g.micro;
+  const aiden = method.startsWith("aiden");
+  v += (aiden ? AIDEN_ROAST : ROAST_OFFSET)[s.roast] * roastSteps(g, method);
+  if (method !== "espresso") v += ((aiden ? AIDEN_FAMILY_GRIND : FAMILY_GRIND)[fam] || 0) * g.micro;
   if (method === "espresso" && s.age === "fresh") v += g.micro; // very fresh coffee runs fast and gassy
   if (method === "espresso" && s.age === "old") v -= g.micro;
-  if (s.decaf === "yes") v -= (method === "espresso" ? 1 : 2) * g.micro; // decaf extracts fast, so grind finer
+  if (s.decaf === "yes" && !aiden) v -= g.micro; // decaf extracts fast, so grind a touch finer (Fellow's Aiden decaf profiles don't)
   v += extraMicro * g.micro;
   v = Math.min(g.max, Math.max(g.min, Math.round(v / g.step) * g.step));
   let note = g.note;
@@ -225,16 +230,17 @@ const temp = t => `${F(t)} (${C(t)})`;
 const g1 = n => Math.round(n * 10) / 10;
 
 /* ---------------- Fellow Aiden ---------------- */
-/* Calibrated against Fellow's own Drops profiles (Nov 2026): cooler pulses than most
-   pour over guides, a hotter bloom, and pulse temps that step down through the brew. */
+/* Calibrated against 200 Fellow Drops "Fellow's Take" posts (Nov 2026). Fellow runs light washed
+   coffees around 200-205F, fermented and experimental lots cooler (~195F), medium roasts ~203F,
+   and dark roasts with a very hot bloom and cool pulses (~185F). Pulse temps step down. */
 const AIDEN = {
-  floral: { t: 198, r: 16.5, bR: 2.5, bS: 35, bT: +4, p: 4, gap: 23, fall: 4 },
-  citrus: { t: 200, r: 16.5, bR: 2, bS: 40, bT: +5, p: 3, gap: 28, fall: 6 },
-  stone:  { t: 201, r: 16, bR: 2.5, bS: 40, bT: +1, p: 3, gap: 28, fall: 3 },
-  berry:  { t: 196, r: 16, bR: 3, bS: 45, bT: +2, p: 2, gap: 28, fall: 2 },
-  choc:   { t: 202, r: 16, bR: 2.5, bS: 35, bT: +3, p: 3, gap: 23, fall: 2 },
-  heavy:  { t: 202, r: 15.5, bR: 2, bS: 30, bT: +2, p: 2, gap: 28, fall: 0 },
-  roasty: { t: 195, r: 16.5, bR: 2, bS: 25, bT: -2, p: 2, gap: 23, fall: 0 },
+  floral: { t: 202, r: 16.5, bR: 2.5, bS: 35, bT: +3, p: 4, gap: 23, fall: 4 },
+  citrus: { t: 203, r: 16.5, bR: 2, bS: 40, bT: +3, p: 3, gap: 28, fall: 6 },
+  stone:  { t: 203, r: 16, bR: 2.5, bS: 40, bT: +2, p: 3, gap: 28, fall: 3 },
+  berry:  { t: 197, r: 16, bR: 3, bS: 45, bT: +3, p: 2, gap: 28, fall: 2 },
+  choc:   { t: 204, r: 15.5, bR: 2.5, bS: 35, bT: +1, p: 3, gap: 23, fall: 2 },
+  heavy:  { t: 203, r: 15.5, bR: 2, bS: 30, bT: +2, p: 2, gap: 28, fall: 0 },
+  roasty: { t: 188, r: 16, bR: 2, bS: 30, bT: +20, p: 2, gap: 23, fall: 0 },
 };
 function aidenRecipe(s) {
   const { fam, why } = familyFor(s);
@@ -282,7 +288,7 @@ function aidenRecipe(s) {
   ];
   if (a.fall) why2.push(["Pulse temps", `Step down from ${singleT[0]}°F to ${singleT[singleT.length - 1]}°F. Cooler late pulses keep the finish clean, the way Fellow builds its Drops profiles.`]);
   if (bloomT > a.t) why2.push(["Bloom temp", `${bloomT - a.t}°F hotter than the pulses to open the coffee up early.`]);
-  if (s.decaf === "yes") why2.push(["Decaf", "Ground finer. Decaf beans are more porous and extract faster, so they need less room."]);
+  if (s.decaf === "yes") why2.push(["Decaf", "Same grind as regular. Fellow's own Aiden decaf profiles don't grind finer, so neither does this."]);
   const rows = sections.flatMap(x => x.rows);
   const name = shortName(s, fam);
   return { fam, why, why2: famWhy(fam, "aiden").concat(why2), rows, sections, grind: g, name,
@@ -290,15 +296,16 @@ function aidenRecipe(s) {
 }
 function famWhy(fam, m) {
   const t = {
-    floral: [["Temperature", "Hot bloom to open it up, then cooler pulses so the florals stay delicate instead of turning bitter."], ["Grind", "One step finer so the florals come through."], ["Pulses", "More, shorter pulses for clarity."]],
-    citrus: [["Ratio", "A little open so the acidity reads clean, not sharp."], ["Temperature", "Pulses step down hard so the acidity stays juicy, not sharp."], ["Grind", "One step finer to build sweetness under the brightness."]],
+    floral: [["Temperature", "Hot bloom to open it up, then pulses that cool as they go so the florals stay delicate."], ["Pulses", "More, shorter pulses for clarity."]],
+    citrus: [["Ratio", "A little open so the acidity reads clean, not sharp."], ["Temperature", "Pulses step down hard so the acidity stays juicy, not sharp."]],
     stone:  [["Everything", "Close to defaults. Stone fruit coffees need a full, even extraction to taste sweet instead of tart."]],
     berry:  [["Temperature", "Cooler so fermented fruit doesn't turn boozy."], ["Bloom", "Long and wet to settle a coffee that's often full of gas."], ["Grind", "One step coarser and fewer pulses so the fruit stays distinct instead of muddy."]],
     choc:   [["Everything", "Close to defaults. Chocolate and caramel sit in the middle of the extraction."]],
     heavy:  [["Ratio", "Tighter for body."], ["Grind", "One step coarser, with longer gaps between pulses for contact time."]],
-    roasty: [["Temperature", "Lower to keep ash and smoke down."], ["Grind", "Coarser so the bitter compounds stay in the grounds."]],
+    roasty: [["Temperature", "A very hot bloom to wake up the grounds, then much cooler pulses to keep ash and bitterness out. Fellow brews its dark roast Drops this way."], ["Grind", "Coarser so the bitter compounds stay in the grounds."]],
   }[fam] || [];
   if (m === "espresso") return [];
+  if (m === "aiden") return t.filter(x => x[0] !== "Grind" || fam === "heavy" || fam === "roasty");
   return t;
 }
 function tasteChecks(fam) {
