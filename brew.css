@@ -64,3 +64,12 @@ table.fix td{padding:9px 12px;border-top:1px solid #e6e6ea}
 h3.rt-h{margin:18px 0 2px;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
 table.rt tr:last-child td{color:inherit;font-size:17px}
 table.rt:last-of-type tr:last-child td{color:var(--accent-ink);font-size:19px}
+.dial{margin:22px 0 6px;padding:16px 16px 12px;border-radius:14px;background:#f5f7fb;border:1px solid #e6eaf2}
+.dial h3{margin:0 0 4px}
+.dial p{margin:0 0 10px;color:var(--muted);font-size:15px}
+.dial-btns{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px}
+.dial-log{margin:6px 0 8px;padding-left:20px;font-size:15px}
+.dial-log li{margin:6px 0}
+.dial-log span{display:block;color:var(--muted);font-size:14px}
+.dial-act{display:flex;gap:8px}
+.dial .chip{background:#fff;border:1px solid #d9dee8}

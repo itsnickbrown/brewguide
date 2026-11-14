@@ -108,7 +108,7 @@ const ORIGIN_VARS = {
 const PROC_NAME = { washed: "Washed", natural: "Natural", honey: "Honey", anaerobic: "Anaerobic or experimental",
   "pulped natural": "Pulped natural", "wet-hulled": "Wet-hulled", monsooned: "Monsooned", blend: "Blend" };
 
-const ROASTS = { light: "Light", medium: "Medium", mediumdark: "Medium dark", dark: "Dark" };
+const ROASTS = { ultralight: "Very light", light: "Light", medium: "Medium", mediumdark: "Medium dark", dark: "Dark" };
 const AGES = { fresh: "0 to 7 days off roast", peak: "8 to 21 days", mid: "22 to 35 days", old: "35+ days" };
 
 /* Pick the flavor family the recipe builds toward. */
@@ -182,10 +182,10 @@ const GRINDERS = {
 };
 
 function roastSteps(g, method) { const r = g.roastStep; return typeof r === "number" ? r : (method === "espresso" ? r.espresso : r.other); }
-const ROAST_OFFSET = { light: -1, medium: 0, mediumdark: 1, dark: 2 };
+const ROAST_OFFSET = { ultralight: -1.5, light: -1, medium: 0, mediumdark: 1, dark: 2 };
 /* Fellow's Drops barely move the Aiden grind with roast or flavor: on an Ode Gen 2 single serve
    they average ~4.5 light, ~4.2 medium, ~4.8 medium dark, ~5 dark. So the Aiden uses smaller shifts. */
-const AIDEN_ROAST = { light: 0, medium: 0, mediumdark: 0.5, dark: 1 };
+const AIDEN_ROAST = { ultralight: 0, light: 0, medium: 0, mediumdark: 0.5, dark: 1 };
 const AIDEN_FAMILY_GRIND = { heavy: 1, roasty: 1 };
 const FAMILY_GRIND = { floral: -1, citrus: -1, stone: 0, berry: 1, choc: 0, heavy: 1, roasty: 1 };
 
@@ -245,15 +245,30 @@ const AIDEN = {
 function aidenRecipe(s) {
   const { fam, why } = familyFor(s);
   const a = { ...AIDEN[fam] }, why2 = [];
-  if (s.roast === "light" && (fam === "choc" || fam === "heavy")) { a.t += 2; why2.push(["Temperature", "Plus 2°F because a light roast is dense and slow to give up sweetness."]); }
+  if ((s.roast === "light" || s.roast === "ultralight") && (fam === "choc" || fam === "heavy")) { a.t += 2; why2.push(["Temperature", "Plus 2°F because a light roast is dense and slow to give up sweetness."]); }
+  if (s.roast === "ultralight") { a.t += 6; why2.push(["Temperature", "Plus 6°F for a very light, Nordic-style roast. These beans are dense and hard to extract. Fellow brews Drops from roasters like SEY and Hex at 210°F."]); }
   if (s.roast === "mediumdark" && fam !== "roasty") { a.t -= 2; why2.push(["Temperature", "Minus 2°F to keep a medium dark roast from drying out."]); }
   if (s.age === "fresh") { a.bR = 3; a.bS = 45; why2.push(["Bloom", "1:3 for 45 seconds. Coffee this fresh is full of gas that blocks water."]); }
   if (s.age === "mid") why2.push(["Temperature", "If it tastes flat, add 2°F next time. Coffee at 3 to 5 weeks has lost some aromatics."]);
   if (s.age === "old") { a.bS = 25; a.r = Math.max(15, a.r - 0.5); why2.push(["Ratio", "Tightened 0.5 to win back body on older coffee."]); }
   const cap = t => Math.min(210, Math.max(176, t)); // the Aiden's temperature range tops out at 210F
+  // Dial-in: each tasting note changes one thing, in the order a barista would try it.
+  const tweaks = [];
+  let grindAdj = 0, sourN = 0, bitterN = 0;
+  (s.tw ? s.tw.split(",") : []).filter(k => TWEAKS[k]).forEach((k, i) => {
+    let did;
+    const hotter = () => { if (a.t >= 210) { grindAdj -= 1; return "one grind step finer (already at the Aiden's 210°F max)"; } const n = Math.min(210, a.t + 3); const d = n - a.t; a.t = n; return `${d}°F hotter`; };
+    if (k === "sour") { sourN++; if (sourN % 2) { grindAdj -= 1; did = "one grind step finer"; } else did = hotter(); }
+    if (k === "bitter") { bitterN++; if (bitterN % 2) { grindAdj += 1; did = "one grind step coarser"; } else { a.t -= 3; did = "3°F cooler"; } }
+    if (k === "thin") { a.r = Math.max(14.5, a.r - 0.5); did = `ratio tightened to 1:${a.r}`; }
+    if (k === "hollow") { a.bS = Math.min(90, a.bS + 10); did = `bloom stretched to ${a.bS} seconds`; }
+    if (k === "dry") { if (a.p > 1) { a.p -= 1; did = `one less pulse (${a.p})`; } else { grindAdj += 1; did = "one grind step coarser"; } }
+    if (k === "flat") did = hotter();
+    tweaks.push({ cup: i + 1, k, label: TWEAKS[k][0], did });
+  });
   a.t = cap(a.t);
   const batch = s.size === "batch";
-  const g = grindFor(s.grinder, batch ? "aidenBatch" : "aidenSingle", s, fam);
+  const g = grindFor(s.grinder, batch ? "aidenBatch" : "aidenSingle", s, fam, grindAdj);
   const bloomT = cap(a.t + (a.bT || 0));
   const singleT = Array.from({ length: a.p }, (_, i) => cap(a.t - (a.p > 1 ? Math.round(a.fall * i / (a.p - 1)) : 0)));
   const batchT = a.t;
@@ -292,7 +307,7 @@ function aidenRecipe(s) {
   const rows = sections.flatMap(x => x.rows);
   const name = shortName(s, fam);
   return { fam, why, why2: famWhy(fam, "aiden").concat(why2), rows, sections, grind: g, name,
-    taste: tasteChecks(fam), fixes: AIDEN_FIXES, method: "aiden" };
+    taste: tasteChecks(fam), fixes: AIDEN_FIXES, tweaks, method: "aiden" };
 }
 function famWhy(fam, m) {
   const t = {
@@ -320,6 +335,15 @@ function tasteChecks(fam) {
   };
   return t[fam];
 }
+/* Tasting buttons for the Aiden dial-in helper: [button label, what it usually means]. */
+const TWEAKS = {
+  sour:   ["Sour or sharp", "Under-extracted. First a finer grind, then more heat if it's still sour."],
+  bitter: ["Bitter or harsh", "Over-extracted. First a coarser grind, then less heat if it's still bitter."],
+  thin:   ["Thin or watery", "Not enough coffee for the water. Tighten the ratio."],
+  hollow: ["Hollow middle", "The bloom didn't fully wet the grounds. Bloom longer."],
+  dry:    ["Dry, chalky finish", "Too much agitation. Fewer pulses."],
+  flat:   ["Flat or dull", "Needs more energy. A bit more heat."],
+};
 const AIDEN_FIXES = [
   ["Sour, sharp", "Under-extracted", "One grind step finer"],
   ["Thin, watery", "Ratio too wide", "Tighten the ratio by 0.5"],
@@ -349,6 +373,7 @@ const DRIPPERS = {
 function pourRecipe(s) {
   const { fam, why } = familyFor(s);
   const p = { ...PO[fam] }, why2 = [];
+  if (s.roast === "ultralight") { p.t = Math.min(212, p.t + 4); why2.push(["Temperature", "Hotter for a very light, Nordic-style roast. These beans are dense and slow to extract."]); }
   const cups = s.cups === "2" ? 2 : 1;
   const dose = cups === 2 ? 30 : 15;
   if (s.dripper === "chemex" && cups === 1) why2.push(["Size", "A Chemex works best at 25 grams or more. Two cups will taste better than one."]);
@@ -384,6 +409,7 @@ const POUR_FIXES = [
 
 /* ---------------- espresso ---------------- */
 const ESP = {
+  ultralight: { ratio: 2.5, time: 30, t: 203 },
   light:      { ratio: 2.5, time: 30, t: 201 },
   medium:     { ratio: 2, time: 28, t: 199 },
   mediumdark: { ratio: 2, time: 27, t: 197 },
@@ -392,9 +418,9 @@ const ESP = {
 function espRecipe(s) {
   const { fam, why } = familyFor(s);
   const e = { ...ESP[s.roast] }, why2 = [];
-  if (s.roast === "light" && (fam === "stone" || fam === "berry")) { e.ratio = 2.3; why2.push(["Ratio", "1:2.3 keeps fruity light roasts sweet without going thin."]); }
+  if ((s.roast === "light" || s.roast === "ultralight") && (fam === "stone" || fam === "berry")) { e.ratio = 2.3; why2.push(["Ratio", "1:2.3 keeps fruity light roasts sweet without going thin."]); }
   if (s.roast === "medium" && (fam === "floral" || fam === "citrus")) { e.ratio = 2.2; why2.push(["Ratio", "A slightly longer shot opens up the brighter notes."]); }
-  if (s.roast === "light") why2.push(["Pre-infusion", "If your machine has it, use 5 to 8 seconds. Light roasts extract more evenly with it."]);
+  if ((s.roast === "light" || s.roast === "ultralight")) why2.push(["Pre-infusion", "If your machine has it, use 5 to 8 seconds. Light roasts extract more evenly with it."]);
   if (s.roast === "dark") why2.push(["Temperature", "Lower to keep dark roasts from tasting burnt."]);
   if (s.age === "fresh") why2.push(["Rest", "Espresso from beans under a week old runs fast and foamy. Let them rest to day 7 if you can. The grind is one step coarser to help."]);
   const dose = 18, out = Math.round(dose * e.ratio);
@@ -418,7 +444,7 @@ function shortName(s, fam) {
     elsalvador:"ELS", nicaragua:"NIC", mexico:"MEX", peru:"PER", bolivia:"BOL", ecuador:"ECU", rwanda:"RWA", burundi:"BUR", tanzania:"TAN",
     uganda:"UGA", sumatra:"SUM", png:"PNG", yemen:"YEM", india:"IND", blend:"BLEND" }[s.origin] || "COF";
   const word = { floral: "Floral", citrus: "Bright", stone: "Sweet", berry: "Fruit", choc: "Choc", heavy: "Body", roasty: "Dark" }[fam];
-  const r = { light: "L", medium: "M", mediumdark: "MD", dark: "D" }[s.roast] || "";
+  const r = { ultralight: "VL", light: "L", medium: "M", mediumdark: "MD", dark: "D" }[s.roast] || "";
   return `${code} ${word} ${r}${s.size === "batch" ? "B" : ""}`.slice(0, 12).trim();
 }
 
@@ -464,7 +490,7 @@ if (typeof document !== "undefined") (function () {
   const esc = x => String(x).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
   const opt = (v, t, sel) => `<option value="${esc(v)}"${v === sel ? " selected" : ""}>${esc(t)}</option>`;
 
-  const DEF = { origin: "ethiopia", region: "", process: "washed", varietal: "", roast: "light", age: "peak", decaf: "no", notes: [],
+  const DEF = { origin: "ethiopia", region: "", process: "washed", varietal: "", roast: "light", age: "peak", decaf: "no", tw: "", notes: [],
     grinder: MODE === "espresso" ? "baratza-encore-esp" : "fellow-ode-2", size: "single", dripper: "v60", cups: "1", basket: "unpressurized" };
   let s = { ...DEF };
   try { const h = new URLSearchParams(location.hash.slice(1)); h.forEach((v, k) => { if (k in DEF) s[k] = k === "notes" ? v.split(",").filter(x => FAMILIES[x]) : v; }); } catch (_) {}
@@ -517,6 +543,17 @@ if (typeof document !== "undefined") (function () {
     if (R.method === "espresso") html += `<h3>How to dial it in</h3><p>Pull the shot and stop at <b>${R.out} g</b>. If it took much less than ${R.time} seconds, go one step finer. Much more, one step coarser. Change one thing per shot.</p>`;
     if (R.why2.length) html += `<h3>Why these numbers</h3><ul class="why">${R.why2.map(x => `<li><b>${esc(x[0])}.</b> ${esc(x[1])}</li>`).join("")}</ul>`;
     html += `<h3>Taste for this</h3><ul class="why">${R.taste.map(x => `<li>${esc(x)}</li>`).join("")}</ul>`;
+    if (R.method === "aiden") {
+      html += `<div class="dial" id="dial"><h3>Dial it in for your bag</h3>
+        <p>Brew it, taste it, then tap what you noticed. Each tap changes one setting and updates the profile above, in the order a barista would try it.</p>
+        <div class="dial-btns">${Object.entries(TWEAKS).map(([k, v]) => `<button type="button" class="chip" data-tw="${k}" title="${esc(v[1])}">${esc(v[0])}</button>`).join("")}</div>`;
+      if (R.tweaks.length) {
+        html += `<ol class="dial-log">${R.tweaks.map(x => `<li><b>After cup ${x.cup}: ${esc(x.label.toLowerCase())}.</b> Changed: ${esc(x.did)}. <span>${esc(TWEAKS[x.k][1])}</span></li>`).join("")}</ol>
+          <p class="hint">Changes are saved in this page's link. Copy the link to keep this bag's profile.</p>
+          <div class="dial-act"><button type="button" class="btn" data-tw-undo>Undo last</button><button type="button" class="btn" data-tw-reset>Start over</button></div>`;
+      } else html += `<p class="hint">Tasted great? Leave it. You're dialed in.</p>`;
+      html += `</div>`;
+    } else
     html += `<h3>If it's off, change one thing</h3><table class="fix"><tr><th>Tastes</th><th>Likely cause</th><th>Next brew</th></tr>${R.fixes.map(f => `<tr><td>${esc(f[0])}</td><td>${esc(f[1])}</td><td>${esc(f[2])}</td></tr>`).join("")}</table>`;
     html += `<p class="fine">Grind numbers are starting points from each maker's guide. Burrs and calibration vary between units, so taste and adjust.</p>`;
     $("result").innerHTML = html;
@@ -544,11 +581,15 @@ if (typeof document !== "undefined") (function () {
   document.addEventListener("change", e => {
     const id = e.target.id; if (!(id in DEF)) return;
     s[id] = e.target.value;
+    if (["origin", "region", "process", "varietal", "age"].includes(id)) s.tw = "";
     if (id === "origin") { s.region = ""; s.process = ORIGINS[s.origin].procs[0]; }
     fillSelects(); render();
   });
   document.addEventListener("click", e => {
-    const r = e.target.closest("[data-roast]"); if (r) { s.roast = r.dataset.roast; fillSelects(); render(); return; }
+    const r = e.target.closest("[data-roast]"); if (r) { s.roast = r.dataset.roast; s.tw = ""; fillSelects(); render(); return; }
+    const tw = e.target.closest("[data-tw]"); if (tw) { s.tw = s.tw ? s.tw + "," + tw.dataset.tw : tw.dataset.tw; render(); count("dial-" + tw.dataset.tw); const d = document.getElementById("dial"); d && d.scrollIntoView({ block: "nearest" }); return; }
+    if (e.target.closest("[data-tw-undo]")) { s.tw = s.tw.split(",").slice(0, -1).join(","); render(); return; }
+    if (e.target.closest("[data-tw-reset]")) { s.tw = ""; render(); return; }
     const n = e.target.closest("[data-note]");
     if (n) { const k = n.dataset.note; s.notes = s.notes.includes(k) ? s.notes.filter(x => x !== k) : s.notes.concat(k).slice(-2); fillSelects(); render(); return; }
     if (e.target.id === "share") { navigator.clipboard && navigator.clipboard.writeText(location.href).then(() => { e.target.textContent = "Copied"; setTimeout(() => e.target.textContent = "Copy link", 1500); }); count("share-" + MODE); return; }
