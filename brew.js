@@ -420,13 +420,13 @@ function espRecipe(s) {
   const e = { ...ESP[s.roast] }, why2 = [];
   if ((s.roast === "light" || s.roast === "ultralight") && (fam === "stone" || fam === "berry")) { e.ratio = 2.3; why2.push(["Ratio", "1:2.3 keeps fruity light roasts sweet without going thin."]); }
   if (s.roast === "medium" && (fam === "floral" || fam === "citrus")) { e.ratio = 2.2; why2.push(["Ratio", "A slightly longer shot opens up the brighter notes."]); }
-  if ((s.roast === "light" || s.roast === "ultralight")) why2.push(["Pre-infusion", "If your machine has it, use 5 to 8 seconds. Light roasts extract more evenly with it."]);
+  if ((s.roast === "light" || s.roast === "ultralight")) why2.push(["Pre-infusion", "If your machine has it, use 5 to 8 seconds. Light roasts extract more evenly with it. Count it in the shot time."]);
   if (s.roast === "dark") why2.push(["Temperature", "Lower to keep dark roasts from tasting burnt."]);
   if (s.age === "fresh") why2.push(["Rest", "Espresso from beans under a week old runs fast and foamy. Let them rest to day 7 if you can. The grind is one step coarser to help."]);
   const dose = 18, out = Math.round(dose * e.ratio);
   const g = grindFor(s.grinder, "espresso", s, fam);
   const rows = [
-    ["Dose", `${dose} g`], ["Yield", `${out} g (1:${e.ratio})`], ["Shot time", `${e.time} seconds from pressing start`],
+    ["Dose", `${dose} g`], ["Yield", `${out} g (1:${e.ratio})`], ["Shot time", `${e.time} seconds, counted from when you press start (pre-infusion included)`],
     ["Brew temp", temp(e.t)], ["Basket", s.basket === "pressurized" ? "Pressurized (double wall)" : "Unpressurized (single wall)"], ["Grind", g.text],
   ];
   return { fam, why, why2, rows, grind: g, name: shortName(s, fam), taste: tasteChecks(fam), fixes: ESP_FIXES, method: "espresso", out, time: e.time };
@@ -540,7 +540,7 @@ if (typeof document !== "undefined") (function () {
       else html += `<p class="gnote"><b>${esc(g.name)}:</b> ${esc(gr.note)}${gr.warn ? " You picked an unpressurized basket, so expect a fast, sour shot until you upgrade the grinder." : ""}</p>`;
     }
     if (R.steps) html += `<h3>Pour schedule</h3><ol class="steps2">${R.steps.map(x => `<li><b>${esc(x[0])}</b> ${esc(x[1])}</li>`).join("")}</ol>`;
-    if (R.method === "espresso") html += `<h3>How to dial it in</h3><p>Pull the shot and stop at <b>${R.out} g</b>. If it took much less than ${R.time} seconds, go one step finer. Much more, one step coarser. Change one thing per shot.</p>`;
+    if (R.method === "espresso") html += `<h3>How to dial it in</h3><p>Start the timer when you press start, so pre-infusion counts toward the time. Pull the shot and stop at <b>${R.out} g</b>. If it took much less than ${R.time} seconds, go one step finer. Much more, one step coarser. Change one thing per shot.</p>`;
     if (R.why2.length) html += `<h3>Why these numbers</h3><ul class="why">${R.why2.map(x => `<li><b>${esc(x[0])}.</b> ${esc(x[1])}</li>`).join("")}</ul>`;
     html += `<h3>Taste for this</h3><ul class="why">${R.taste.map(x => `<li>${esc(x)}</li>`).join("")}</ul>`;
     if (R.method === "aiden") {
