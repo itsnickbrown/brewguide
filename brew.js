@@ -537,7 +537,7 @@ if (typeof document !== "undefined") (function () {
     if (R.grind) {
       const gr = R.grind;
       if (gr.blade || gr.none) html += `<div class="callout warn"><b>${esc(gr.text)}</b> ${esc(gr.note || "")}</div>`;
-      else html += `<p class="gnote"><b>${esc(g.name)}:</b> ${esc(gr.note)}${gr.warn ? " You picked an unpressurized basket, so expect a fast, sour shot until you upgrade the grinder." : ""}</p>`;
+      else html += `<p class="gnote"><b>${esc(g.name)}:</b> ${esc(gr.note)}${gr.warn ? " You picked an unpressurized basket, so expect a fast, sour shot until you upgrade the grinder." : ""} <a href="grind/${esc(s.grinder)}">All ${esc(g.name)} settings</a></p>`;
     }
     if (R.steps) html += `<h3>Pour schedule</h3><ol class="steps2">${R.steps.map(x => `<li><b>${esc(x[0])}</b> ${esc(x[1])}</li>`).join("")}</ol>`;
     if (R.method === "espresso") html += `<h3>How to dial it in</h3><p>Start the timer when you press start, so pre-infusion counts toward the time. Pull the shot and stop at <b>${R.out} g</b>. If it took much less than ${R.time} seconds, go one step finer. Much more, one step coarser. Change one thing per shot.</p>`;

@@ -39,3 +39,6 @@ table.rt:last-of-type tr:last-child td{color:var(--chile)}
 .dial h3{color:var(--turq)}
 .dial .chip{background:#fff;border-color:#b9dcd9}
 .beans{background:var(--accent-soft)}
+.nav .brand,.nav .links a{white-space:nowrap}
+@media(max-width:520px){.nav .in{padding:0 14px;gap:10px}.nav .links{gap:11px;font-size:12px}.nav .brand{font-size:16px}}
+@media(max-width:400px){.nav .sm-hide{display:none}}
