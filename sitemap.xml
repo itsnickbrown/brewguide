@@ -2,6 +2,8 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://brewguide.pages.dev/</loc><lastmod>2026-11-16</lastmod></url>
   <url><loc>https://brewguide.pages.dev/pour-over</loc><lastmod>2026-11-16</lastmod></url>
+  <url><loc>https://brewguide.pages.dev/french-press</loc><lastmod>2026-11-16</lastmod></url>
+  <url><loc>https://brewguide.pages.dev/aeropress</loc><lastmod>2026-11-16</lastmod></url>
   <url><loc>https://brewguide.pages.dev/espresso</loc><lastmod>2026-11-16</lastmod></url>
   <url><loc>https://brewguide.pages.dev/grind/</loc><lastmod>2026-11-16</lastmod></url>
   <url><loc>https://brewguide.pages.dev/grind/fellow-ode-2</loc><lastmod>2026-11-16</lastmod></url>
@@ -18,4 +20,6 @@
   <url><loc>https://brewguide.pages.dev/grind/1zpresso-k-ultra</loc><lastmod>2026-11-16</lastmod></url>
   <url><loc>https://brewguide.pages.dev/grind/weber-eg1</loc><lastmod>2026-11-16</lastmod></url>
   <url><loc>https://brewguide.pages.dev/grind/niche-zero</loc><lastmod>2026-11-16</lastmod></url>
+  <url><loc>https://brewguide.pages.dev/grind/breville-barista-express</loc><lastmod>2026-11-16</lastmod></url>
+  <url><loc>https://brewguide.pages.dev/grind/breville-barista-pro</loc><lastmod>2026-11-16</lastmod></url>
 </urlset>

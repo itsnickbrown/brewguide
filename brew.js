@@ -135,49 +135,55 @@ function familyFor(s) {
    finer and darker roasts move coarser by roastStep. micro is the smallest useful move. */
 const GRINDERS = {
   "fellow-ode-2": { name: "Fellow Ode Gen 2", unit: "setting", min: 1, max: 11, step: 1/3, roastStep: 2/3, micro: 1/3,
-    base: { aidenSingle: 4 + 1/3, aidenBatch: 7, v60: 5, kalita: 5 + 1/3, chemex: 6 + 2/3, espresso: null },
+    base: { aidenSingle: 4 + 1/3, aidenBatch: 7, v60: 5, kalita: 5 + 1/3, chemex: 6 + 2/3, espresso: null , aeropress: 3 + 1/3, frenchpress: 9},
     fmt: "ode", note: "The dial has 11 numbers with two notches between each. Fellow says the Ode is not for espresso.", buy: "fellow-ode-2" },
   "fellow-opus-2": { name: "Fellow Opus 2 (Gen 2)", unit: "setting", min: 0, max: 10, step: 0.1, roastStep: { espresso: 0.25, other: 0.5 }, micro: 0.1,
-    base: { aidenSingle: 5, aidenBatch: 7, v60: 6, kalita: 6.5, chemex: 7.5, espresso: 1.2 },
+    base: { aidenSingle: 5, aidenBatch: 7, v60: 6, kalita: 6.5, chemex: 7.5, espresso: 1.2 , aeropress: 4, frenchpress: 8.5},
     fmt: "dec", note: "Stepless dial from 0 (fine) to 10 (coarse). Fellow's own recipes run about 4 to 6 for Aiden single serve, 6 to 10 for batch, 5.5 to 7 for pour over and 0.8 to 1.5 for espresso.", buy: "fellow-opus-2" },
   "fellow-opus": { name: "Fellow Opus (original)", unit: "setting", min: 1, max: 11, step: 0.25, roastStep: 0.5, micro: 0.25,
-    base: { aidenSingle: 4.75, aidenBatch: 6, v60: 4.5, kalita: 4.75, chemex: 5.5, espresso: 1.5 },
+    base: { aidenSingle: 4.75, aidenBatch: 6, v60: 4.5, kalita: 4.75, chemex: 5.5, espresso: 1.5 , aeropress: 3.5, frenchpress: 8},
     fmt: "dec", note: "Outer ring sets the number. Use the inner ring for fine espresso steps. Fellow suggests the higher end of a range for darker roasts.", buy: "fellow-opus" },
   "baratza-encore": { name: "Baratza Encore", unit: "setting", min: 0, max: 40, step: 1, roastStep: 2, micro: 1,
-    base: { aidenSingle: 16, aidenBatch: 18, v60: 15, kalita: 16, chemex: 20, espresso: 8 },
+    base: { aidenSingle: 16, aidenBatch: 18, v60: 15, kalita: 16, chemex: 20, espresso: 8 , aeropress: 12, frenchpress: 28},
     espressoNote: "Baratza lists 8 as an espresso start, but the Encore can only make real espresso with a pressurized basket.",
     pressurizedOnly: true, fmt: "int", note: "40 settings. Baratza's own starting points: V60 15, drip 18, Chemex 20, French press 28.", buy: "baratza-encore" },
   "baratza-encore-esp": { name: "Baratza Encore ESP", unit: "setting", min: 1, max: 40, step: 1, roastStep: { espresso: 2, other: 1 }, micro: 1,
-    base: { aidenSingle: 26, aidenBatch: 28, v60: 25, kalita: 26, chemex: 30, espresso: 15 },
+    base: { aidenSingle: 26, aidenBatch: 28, v60: 25, kalita: 26, chemex: 30, espresso: 15 , aeropress: 22, frenchpress: 34},
     fmt: "int", note: "Settings 1 to 20 are small espresso steps. Settings 21 to 40 are big filter steps, so move one at a time.", buy: "baratza-encore-esp" },
   "baratza-virtuoso": { name: "Baratza Virtuoso+", unit: "setting", min: 0, max: 40, step: 1, roastStep: 2, micro: 1,
-    base: { aidenSingle: 16, aidenBatch: 18, v60: 15, kalita: 16, chemex: 20, espresso: 8 },
+    base: { aidenSingle: 16, aidenBatch: 18, v60: 15, kalita: 16, chemex: 20, espresso: 8 , aeropress: 12, frenchpress: 28},
     espressoNote: "Baratza lists 8 as an espresso start, but the Virtuoso+ is a filter grinder. Use a pressurized basket.",
     pressurizedOnly: true, fmt: "int", note: "Same starting points as the Encore: V60 15, drip 18, Chemex 20.", buy: "baratza-virtuoso" },
   "oxo-8717000": { name: "OXO Brew Conical Burr (8717000)", unit: "setting", min: 1, max: 15, step: 0.5, roastStep: 1, micro: 0.5,
-    base: { aidenSingle: 10, aidenBatch: 11, v60: 9, kalita: 9.5, chemex: 10, espresso: null },
+    base: { aidenSingle: 10, aidenBatch: 11, v60: 9, kalita: 9.5, chemex: 10, espresso: null , aeropress: 6.5, frenchpress: 14},
     fmt: "oxo", note: "15 numbers with micro positions between them. Twist the hopper for micro moves. OXO's manual puts pour over and drip at 6 to 10.", buy: "oxo-8717000" },
   "breville-sgp": { name: "Breville Smart Grinder Pro", unit: "setting", min: 1, max: 60, step: 1, roastStep: { espresso: 2, other: 3 }, micro: 1,
-    base: { aidenSingle: 38, aidenBatch: 42, v60: 38, kalita: 40, chemex: 44, espresso: 12 },
+    base: { aidenSingle: 38, aidenBatch: 42, v60: 38, kalita: 40, chemex: 44, espresso: 12 , aeropress: 28, frenchpress: 54},
     pressurized: 30, fmt: "int", note: "60 settings. Breville groups them as espresso 1 to 30, drip 31 to 48, French press 55 to 60.", buy: "breville-sgp" },
   "comandante-c40": { name: "Comandante C40 MK4", unit: "clicks", min: 0, max: 40, step: 1, roastStep: 2, micro: 1,
-    base: { aidenSingle: 24, aidenBatch: 26, v60: 24, kalita: 25, chemex: 28, espresso: 11 },
+    base: { aidenSingle: 24, aidenBatch: 26, v60: 24, kalita: 25, chemex: 28, espresso: 11 , aeropress: 18, frenchpress: 32},
     fmt: "clicks", note: "Count clicks from fully closed. About 30 microns per click.", buy: "comandante-c40" },
   "timemore-c2": { name: "Timemore Chestnut C2", unit: "clicks", min: 0, max: 36, step: 1, roastStep: 1, micro: 1,
-    base: { aidenSingle: 18, aidenBatch: 20, v60: 18, kalita: 19, chemex: 21, espresso: null },
+    base: { aidenSingle: 18, aidenBatch: 20, v60: 18, kalita: 19, chemex: 21, espresso: null , aeropress: 14, frenchpress: 26},
     fmt: "clicks", note: "Count clicks from fully closed. Timemore's manual puts pour over at 18 to 24 clicks. The steps are too coarse for real espresso.", buy: "timemore-c2" },
   "timemore-078s": { name: "Timemore Sculptor 078S", unit: "setting", min: 0, max: 18, step: 0.25, roastStep: { espresso: 0.5, other: 1 }, micro: 0.25,
-    base: { aidenSingle: 10.5, aidenBatch: 11.5, v60: 10, kalita: 10.5, chemex: 12, espresso: 2.5 },
+    base: { aidenSingle: 10.5, aidenBatch: 11.5, v60: 10, kalita: 10.5, chemex: 12, espresso: 2.5 , aeropress: 7, frenchpress: 15},
     fmt: "dec", note: "Stepless dial. Timemore's manual puts espresso at 1 to 4, pour over at 8 to 13 and French press at 14 and up. For espresso, higher RPM runs the shot faster and lower RPM slows it down.", buy: "timemore-078s" },
   "1zpresso-k-ultra": { name: "1Zpresso K-Ultra", unit: "setting", min: 0, max: 15, step: 0.1, roastStep: { espresso: 0.2, other: 0.4 }, micro: 0.1,
-    base: { aidenSingle: 7.8, aidenBatch: 8.6, v60: 7.5, kalita: 8, chemex: 8.8, espresso: 2.6 },
+    base: { aidenSingle: 7.8, aidenBatch: 8.6, v60: 7.5, kalita: 8, chemex: 8.8, espresso: 2.6 , aeropress: 5.5, frenchpress: 10.5},
     fmt: "kultra", note: "Read it as number.click on the outer dial, so 7.5 means the dot on 7 plus 5 clicks. Each click is 20 microns. Common starting points are about 2.5 for espresso and 7 to 9.5 for pour over.", buy: "1zpresso-k-ultra" },
   "weber-eg1": { name: "Weber Workshops EG-1", unit: "numbers past burr lock", min: 0, max: 28, step: 0.2, roastStep: { espresso: 0.5, other: 1 }, micro: 0.2,
-    base: { aidenSingle: 11, aidenBatch: 13, v60: 10.5, kalita: 11.5, chemex: 13, espresso: 5.5 },
+    base: { aidenSingle: 11, aidenBatch: 13, v60: 10.5, kalita: 11.5, chemex: 13, espresso: 5.5 , aeropress: 8, frenchpress: 18},
     fmt: "eg1", note: "The EG-1 has no fixed zero, so count from burr lock: close the burrs until they just touch, note that number, then add the setting shown. Each tick is 5 microns. Settings assume the CORE burrs. With ULTRA burrs, start a couple of numbers coarser for filter.", buy: "weber-eg1" },
   "niche-zero": { name: "Niche Zero", unit: "setting", min: 0, max: 50, step: 1, roastStep: { espresso: 2, other: 4 }, micro: 1,
-    base: { aidenSingle: 45, aidenBatch: 50, v60: 45, kalita: 47, chemex: 50, espresso: 15 },
+    base: { aidenSingle: 45, aidenBatch: 50, v60: 45, kalita: 47, chemex: 50, espresso: 15 , aeropress: 32, frenchpress: 50},
     fmt: "int", note: "Stepless dial. Niche suggests about 15 for espresso and 35 to 50 for V60. Units vary, so treat these as a start.", buy: "niche-zero" },
+  "breville-barista-express": { name: "Breville Barista Express (built-in grinder)", unit: "setting", min: 1, max: 16, step: 1, roastStep: { espresso: 1, other: 1 }, micro: 1, espressoOnly: true,
+    base: { espresso: 5 },
+    fmt: "int", note: "Grind size dial on the side, 1 (fine) to 16. Breville suggests starting at 5. If you run out of range, the inner burr can be moved too (see Breville's manual).", buy: "breville-barista-express" },
+  "breville-barista-pro": { name: "Breville Barista Pro (built-in grinder)", unit: "setting", min: 1, max: 30, step: 1, roastStep: { espresso: 2, other: 2 }, micro: 1, espressoOnly: true,
+    base: { espresso: 15 },
+    fmt: "int", note: "Grind setting 1 (fine) to 30 on the screen. Breville suggests starting around 15. Move one or two numbers at a time.", buy: "breville-barista-pro" },
   "blade": { name: "Blade grinder or pre-ground", unit: "", blade: true, base: {}, buy: null },
 };
 
@@ -208,7 +214,7 @@ function grindFor(gid, method, s, fam, extraMicro = 0) {
   if (g.blade) return { blade: true, text: method === "espresso" ? "A blade grinder can't make espresso." : "Medium, like coarse sand",
     note: "Blade grinders chop beans unevenly, so the cup mixes sour and bitter. A burr grinder is the biggest upgrade you can make." };
   const b = g.base[method];
-  if (b == null) return { none: true, text: "This grinder isn't built for espresso.", note: g.note };
+  if (b == null) return { none: true, text: method === "espresso" ? "This grinder isn't built for espresso." : "This grinder is built into an espresso machine, so it only grinds for espresso.", note: g.note };
   let v = b;
   if (method === "espresso" && s.basket === "pressurized" && g.pressurized) v = g.pressurized;
   const aiden = method.startsWith("aiden");
@@ -335,6 +341,33 @@ function tasteChecks(fam) {
   };
   return t[fam];
 }
+/* Dial-in buttons for pour over, press and espresso: [label, what it usually means]. */
+const DIAL = {
+  pour: {
+    sour:   ["Sour or sharp", "Under-extracted. First a finer grind, then hotter water if it's still sour."],
+    bitter: ["Bitter or harsh", "Over-extracted. First a coarser grind, then cooler water if it's still bitter."],
+    slow:   ["Drained slow", "The bed is choking. Two steps coarser."],
+    fast:   ["Drained fast", "Water is running past the coffee. Two steps finer."],
+    thin:   ["Thin or watery", "Not enough coffee for the water. Tighten the ratio."],
+    flat:   ["Flat or dull", "Needs more energy. A bit more heat."],
+  },
+  press: {
+    sour:   ["Sour or sharp", "Under-extracted. First a finer grind, then a longer steep."],
+    bitter: ["Bitter or harsh", "Over-extracted. First a coarser grind, then a shorter steep."],
+    thin:   ["Thin or watery", "Not enough coffee for the water. Tighten the ratio."],
+    muddy:  ["Muddy or silty", "Too many fines in the cup. One step coarser, and press or pour gently."],
+    flat:   ["Flat or dull", "Needs more energy. A bit more heat."],
+  },
+  espresso: {
+    fast:   ["Ran fast, sour", "Water found an easy path. One step finer."],
+    slow:   ["Ran slow, bitter", "The puck is choking. One step coarser."],
+    sour:   ["On time but sour", "Under-extracted. Pull a longer shot."],
+    bitter: ["On time but bitter", "Over-extracted. Pull a shorter shot."],
+    thin:   ["Thin, watery body", "Needs more coffee in the basket. Up the dose by 1 g."],
+  },
+};
+function dialLog(mode, tw) { return (tw ? tw.split(",") : []).filter(k => DIAL[mode][k]); }
+
 /* Tasting buttons for the Aiden dial-in helper: [button label, what it usually means]. */
 const TWEAKS = {
   sour:   ["Sour or sharp", "Under-extracted. First a finer grind, then more heat if it's still sour."],
@@ -370,20 +403,41 @@ const DRIPPERS = {
   kalita: { name: "Kalita Wave", grind: "kalita", target: { 1: "3:00", 2: "3:30" } },
   chemex: { name: "Chemex", grind: "chemex", target: { 1: "3:45", 2: "4:15" } },
 };
+const POUR_STYLES = {
+  guide:    "Brew Guide (built for this coffee)",
+  hoffmann: "James Hoffmann's V60",
+  "46":     "Tetsu Kasuya's 4:6 method",
+};
 function pourRecipe(s) {
   const { fam, why } = familyFor(s);
   const p = { ...PO[fam] }, why2 = [];
+  const style = s.dripper === "v60" && POUR_STYLES[s.style] ? s.style : "guide";
   if (s.roast === "ultralight") { p.t = Math.min(212, p.t + 4); why2.push(["Temperature", "Hotter for a very light, Nordic-style roast. These beans are dense and slow to extract."]); }
   const cups = s.cups === "2" ? 2 : 1;
   const dose = cups === 2 ? 30 : 15;
   if (s.dripper === "chemex" && cups === 1) why2.push(["Size", "A Chemex works best at 25 grams or more. Two cups will taste better than one."]);
   if (s.age === "old") { p.r = Math.max(15, p.r - 0.5); why2.push(["Ratio", "Tightened 0.5 to win back body on older coffee."]); }
+  // dial-in changes
+  const tweaks = []; let gAdj = 0, sourN = 0, bitterN = 0;
+  dialLog("pour", s.tw).forEach((k, i) => {
+    let did;
+    const hot = n => { const v = Math.min(212, p.t + n); const d = v - p.t; p.t = v; return d ? `${d}°F hotter` : (gAdj -= 1, "one grind step finer (already at boiling)"); };
+    if (k === "sour") { sourN++; if (sourN % 2) { gAdj -= 1; did = "one grind step finer"; } else did = hot(3); }
+    if (k === "bitter") { bitterN++; if (bitterN % 2) { gAdj += 1; did = "one grind step coarser"; } else { p.t -= 3; did = "3°F cooler"; } }
+    if (k === "slow") { gAdj += 2; did = "two grind steps coarser"; }
+    if (k === "fast") { gAdj -= 2; did = "two grind steps finer"; }
+    if (k === "thin") { p.r = Math.max(14.5, p.r - 0.5); did = `ratio tightened to 1:${p.r}`; }
+    if (k === "flat") did = hot(3);
+    tweaks.push({ cup: i + 1, k, label: DIAL.pour[k][0], did });
+  });
+  if (style === "hoffmann") return hoffmannV60(s, fam, why, p, why2, tweaks, gAdj);
+  if (style === "46") return tetsu46(s, fam, why, p, why2, tweaks, gAdj);
   const water = Math.round(dose * p.r);
   const fresh = s.age === "fresh" || fam === "floral" || fam === "berry";
   const bloomW = Math.round(dose * (fresh ? 3 : 2));
   const bloomS = fresh ? 45 : 35;
   const d = DRIPPERS[s.dripper] || DRIPPERS.v60;
-  const g = grindFor(s.grinder, d.grind, s, fam, cups === 2 ? 1 : 0);
+  const g = grindFor(s.grinder, d.grind, s, fam, (cups === 2 ? 1 : 0) + gAdj);
   const mid = Math.round(water * 0.6);
   const steps = [
     [`0:00`, `Pour ${bloomW} g to wet all the grounds. ${p.swirl ? "Swirl gently." : "Don't stir."} Wait ${bloomS} seconds.`],
@@ -393,10 +447,109 @@ function pourRecipe(s) {
   ];
   const rows = [
     ["Coffee", `${dose} g`], ["Water", `${water} g (1:${p.r})`], ["Water temp", temp(p.t)],
-    ["Grind", g.text], ["Target time", d.target[cups]],
+    ["Target time", d.target[cups]], ["Grind", g.text],
   ];
   return { fam, why, why2: famWhy(fam, "pour").filter(x => x[0] !== "Pulses").concat(why2), rows, steps, grind: g,
-    name: shortName(s, fam), taste: tasteChecks(fam), fixes: POUR_FIXES, method: "pour", dripper: d.name };
+    name: shortName(s, fam), taste: tasteChecks(fam), fixes: POUR_FIXES, method: "pour", dripper: d.name, tweaks, dial: "pour" };
+}
+function hoffmannV60(s, fam, why, p, why2, tweaks, gAdj) {
+  const cups = s.cups === "2" ? 2 : 1;
+  const dose = cups === 2 ? 30 : 15, water = cups === 2 ? 500 : 250;
+  const g = grindFor(s.grinder, "v60", s, fam, (cups === 2 ? 1 : 0) + gAdj);
+  const steps = [
+    ["0:00", `Pour ${dose * 2} g to bloom. Swirl until all the grounds are wet.`],
+    ["0:45", `Pour to ${Math.round(water * 0.6)} g within 30 seconds.`],
+    ["1:15", `Pour to ${water} g within 30 seconds, a bit more gently.`],
+    ["1:45", "Stir once each way with a spoon, then give the V60 a gentle swirl. Let it drain."],
+    [cups === 2 ? "3:30" : "3:00", "Drawdown should finish around here."],
+  ];
+  const rows = [["Coffee", `${dose} g`], ["Water", `${water} g (1:16.7)`], ["Water temp", temp(p.t)], ["Target time", steps[4][0]], ["Grind", g.text]];
+  why2.unshift(["Method", "Hoffmann's Ultimate V60: a big bloom, two timed pours, then a stir and swirl for an even drawdown. The water temperature and grind still come from your coffee."]);
+  return { fam, why, why2, rows, steps, grind: g, name: shortName(s, fam), taste: tasteChecks(fam), fixes: POUR_FIXES, method: "pour", dripper: "James Hoffmann's V60", tweaks, dial: "pour" };
+}
+function tetsu46(s, fam, why, p, why2, tweaks, gAdj) {
+  const cups = s.cups === "2" ? 2 : 1;
+  const dose = cups === 2 ? 30 : 20, water = dose * 15, pour = water / 5;
+  const g = grindFor(s.grinder, "v60", s, fam, 3 + gAdj);
+  const steps = [0, 45, 90, 135, 180].map((sec, i) => [`${Math.floor(sec / 60)}:${String(sec % 60).padStart(2, "0")}`,
+    i === 0 ? `Pour ${pour} g (sweetness and acidity are set by the first two pours).` : i === 1 ? `Pour to ${pour * 2} g.` : `Pour to ${pour * (i + 1)} g (the last three pours set the strength).`]);
+  steps.push(["3:30", "Lift the dripper off, even if a little water is left."]);
+  const rows = [["Coffee", `${dose} g`], ["Water", `${water} g (1:15)`], ["Water temp", temp(p.t)], ["Total time", "3:30"], ["Grind", g.text]];
+  why2.unshift(["Method", `Tetsu Kasuya's 4:6: five equal pours of ${pour} g, 45 seconds apart, on a coarse grind. For a sweeter cup, make the first pour smaller and the second bigger. For a brighter cup, do the opposite.`]);
+  return { fam, why, why2, rows, steps, grind: g, name: shortName(s, fam), taste: tasteChecks(fam), fixes: POUR_FIXES, method: "pour", dripper: "Tetsu Kasuya's 4:6 method", tweaks, dial: "pour" };
+}
+
+/* ---------------- French press, AeroPress and other steeped brewers ---------------- */
+const PRESS_BREWERS = {
+  frenchpress: { name: "French press", grind: "frenchpress", gear: "french-press" },
+  aeropress:   { name: "AeroPress", grind: "aeropress", gear: "aeropress", oneCup: true },
+  switch:      { name: "Hario Switch", grind: "v60", gear: "hario-switch" },
+  clever:      { name: "Clever Dripper", grind: "chemex", gear: "clever" },
+};
+const PRESS_FIXES = [
+  ["Sour, sharp", "Under-extracted", "One grind step finer"],
+  ["Bitter, harsh", "Over-extracted", "One grind step coarser"],
+  ["Muddy, silty", "Too many fines", "One step coarser and press gently"],
+  ["Thin", "Ratio too wide", "Tighten the ratio by 0.5"],
+];
+const mmss = sec => `${Math.floor(sec / 60)}:${String(Math.round(sec % 60)).padStart(2, "0")}`;
+function pressRecipe(s) {
+  const { fam, why } = familyFor(s);
+  const b = PRESS_BREWERS[s.brewer] || PRESS_BREWERS.frenchpress;
+  const p = { ...PO[fam] }, why2 = [];
+  p.r = Math.max(15, p.r - 0.5); // immersion pulls more body, so a touch stronger
+  if (s.roast === "ultralight") { p.t = Math.min(212, p.t + 4); why2.push(["Temperature", "Hotter for a very light, Nordic-style roast."]); }
+  if (s.age === "old") { p.r = Math.max(14.5, p.r - 0.5); why2.push(["Ratio", "Tightened 0.5 to win back body on older coffee."]); }
+  let steep = { frenchpress: 240, aeropress: 120, switch: 120, clever: 150 }[s.brewer] || 240;
+  if (fam === "roasty" || fam === "heavy") steep -= 30;
+  if (s.roast === "light" || s.roast === "ultralight") steep += 30;
+  const tweaks = []; let gAdj = 0, sourN = 0, bitterN = 0;
+  dialLog("press", s.tw).forEach((k, i) => {
+    let did;
+    if (k === "sour") { sourN++; if (sourN % 2) { gAdj -= 1; did = "one grind step finer"; } else { steep += 30; did = "steep 30 seconds longer"; } }
+    if (k === "bitter") { bitterN++; if (bitterN % 2) { gAdj += 1; did = "one grind step coarser"; } else { steep = Math.max(60, steep - 30); did = "steep 30 seconds shorter"; } }
+    if (k === "thin") { p.r = Math.max(14, p.r - 0.5); did = `ratio tightened to 1:${p.r}`; }
+    if (k === "muddy") { gAdj += 1; did = "one grind step coarser"; }
+    if (k === "flat") { p.t = Math.min(212, p.t + 3); did = "hotter water"; }
+    tweaks.push({ cup: i + 1, k, label: DIAL.press[k][0], did });
+  });
+  const cups = b.oneCup ? 1 : (s.cups === "2" ? 2 : 1);
+  if (b.oneCup && s.cups === "2") why2.push(["Size", "An AeroPress makes one cup at a time. Brew it twice for two."]);
+  const dose = cups === 2 ? 30 : 15;
+  const water = Math.min(b.oneCup ? 250 : 1000, Math.round(dose * p.r));
+  const g = grindFor(s.grinder, b.grind, s, fam, (cups === 2 && s.brewer !== "frenchpress" ? 1 : 0) + gAdj);
+  let steps;
+  if (s.brewer === "aeropress") steps = [
+    [mmss(0), `Put the AeroPress on your mug with a rinsed paper filter. Add the coffee, then pour all ${water} g of water.`],
+    [mmss(10), "Put the plunger in about 1 cm so it stops dripping."],
+    [mmss(steep), "Hold the plunger and swirl the AeroPress gently."],
+    [mmss(steep + 30), "Press slowly and evenly for about 30 seconds. Stop at the hiss."],
+    [mmss(steep + 60), "Done."],
+  ];
+  else if (s.brewer === "switch") steps = [
+    [mmss(0), `Close the valve. Add the coffee, then pour all ${water} g of water.`],
+    [mmss(30), "Give it one gentle swirl so all the grounds are wet."],
+    [mmss(steep), "Open the valve and let it drain."],
+    [mmss(steep + 60), "Drawdown should be about done."],
+  ];
+  else if (s.brewer === "clever") steps = [
+    [mmss(0), `Set the Clever on the counter. Add the coffee, then pour all ${water} g of water.`],
+    [mmss(30), "Stir gently 3 or 4 times so all the grounds are wet."],
+    [mmss(steep), "Stir once more, then set it on your mug to drain."],
+    [mmss(steep + 75), "Drawdown should be about done."],
+  ];
+  else steps = [
+    [mmss(0), `Add the coffee, then pour all ${water} g of water. Don't stir yet.`],
+    [mmss(steep), "Stir the crust on top 3 times with a spoon. Scoop off the foam."],
+    [mmss(steep + 300), "Plunge just to the surface, not all the way down. Pour slowly so the sludge stays behind."],
+  ];
+  const total = steps[steps.length - 1][0];
+  const rows = [["Coffee", `${dose} g`], ["Water", `${water} g (1:${p.r})`], ["Water temp", temp(p.t)], ["Steep", mmss(steep)], ["Total time", total], ["Grind", g.text]];
+  if (s.brewer === "frenchpress") why2.unshift(["Method", "James Hoffmann's French press method: steep, break the crust, then wait 5 more minutes so the fines sink. Pressing only to the surface keeps the cup clean."]);
+  if (fam === "roasty" || fam === "heavy") why2.push(["Steep", "A bit shorter so a dark or heavy coffee doesn't turn bitter."]);
+  if (s.roast === "light" || s.roast === "ultralight") why2.push(["Steep", "30 seconds longer. Light roasts are slow to give up sweetness."]);
+  return { fam, why, why2: famWhy(fam, "pour").filter(x => x[0] !== "Pulses").concat(why2), rows, steps, grind: g,
+    name: shortName(s, fam), taste: tasteChecks(fam), fixes: PRESS_FIXES, method: "press", dripper: b.name, tweaks, dial: "press" };
 }
 const POUR_FIXES = [
   ["Sour, sharp", "Under-extracted", "One grind step finer"],
@@ -423,13 +576,34 @@ function espRecipe(s) {
   if ((s.roast === "light" || s.roast === "ultralight")) why2.push(["Pre-infusion", "If your machine has it, use 5 to 8 seconds. Light roasts extract more evenly with it. Count it in the shot time."]);
   if (s.roast === "dark") why2.push(["Temperature", "Lower to keep dark roasts from tasting burnt."]);
   if (s.age === "fresh") why2.push(["Rest", "Espresso from beans under a week old runs fast and foamy. Let them rest to day 7 if you can. The grind is one step coarser to help."]);
-  const dose = 18, out = Math.round(dose * e.ratio);
-  const g = grindFor(s.grinder, "espresso", s, fam);
+  let dose = +s.dose || 18;
+  const tweaks = []; let gAdj = 0;
+  dialLog("espresso", s.tw).forEach((k, i) => {
+    let did;
+    if (k === "fast") { gAdj -= 1; did = "one grind step finer"; }
+    if (k === "slow") { gAdj += 1; did = "one grind step coarser"; }
+    if (k === "sour") { e.ratio = Math.round((e.ratio + 0.2) * 10) / 10; did = `longer shot, 1:${e.ratio}`; }
+    if (k === "bitter") { e.ratio = Math.max(1.5, Math.round((e.ratio - 0.2) * 10) / 10); did = `shorter shot, 1:${e.ratio}`; }
+    if (k === "thin") { dose = Math.min(22, dose + 1); did = `dose up to ${dose} g`; }
+    tweaks.push({ cup: i + 1, k, label: DIAL.espresso[k][0], did });
+  });
+  const out = Math.round(dose * e.ratio);
+  const g = grindFor(s.grinder, "espresso", s, fam, gAdj);
   const rows = [
     ["Dose", `${dose} g`], ["Yield", `${out} g (1:${e.ratio})`], ["Shot time", `${e.time} seconds, counted from when you press start (pre-infusion included)`],
     ["Brew temp", temp(e.t)], ["Basket", s.basket === "pressurized" ? "Pressurized (double wall)" : "Unpressurized (single wall)"], ["Grind", g.text],
   ];
-  return { fam, why, why2, rows, grind: g, name: shortName(s, fam), taste: tasteChecks(fam), fixes: ESP_FIXES, method: "espresso", out, time: e.time };
+  const DRINKS = {
+    latte:      ["Milk", "Steam about 200 ml of milk to a thin, glossy foam. Pour it in last."],
+    cappuccino: ["Milk", "Steam about 120 ml of milk with more air for a thick foam."],
+    flatwhite:  ["Milk", "Steam about 100 ml of milk with very little air for a silky, thin foam."],
+    americano:  ["Water", "Start with 120 to 180 g of hot water, then pour the shot on top."],
+  };
+  if (DRINKS[s.drink]) rows.splice(2, 0, DRINKS[s.drink]);
+  if (["latte", "cappuccino", "flatwhite"].includes(s.drink) && (s.roast === "light" || s.roast === "ultralight")) why2.push(["Milk", "Milk mutes bright light roasts. If the drink tastes flat, try a slightly shorter shot for more punch."]);
+  if (dose < 18) why2.push(["Dose", `${dose} g needs a smaller basket. Too little coffee in a big basket runs fast and sour.`]);
+  if (dose > 18) why2.push(["Dose", `${dose} g needs a larger basket. Overfilling a standard 18 g basket can choke the shot.`]);
+  return { fam, why, why2, rows, grind: g, name: shortName(s, fam), taste: tasteChecks(fam), fixes: ESP_FIXES, method: "espresso", out, time: e.time, tweaks, dial: "espresso" };
 }
 const ESP_FIXES = [
   ["Fast and sour", "Grind too coarse", "One grind step finer"],
@@ -464,6 +638,13 @@ const GEAR = {
   "timemore-078s":      { name: "Timemore Sculptor 078S", q: "Timemore Sculptor 078S electric coffee grinder", why: "78mm flat burr grinder that handles espresso and pour over, with adjustable RPM." },
   "1zpresso-k-ultra":   { name: "1Zpresso K-Ultra", q: "1Zpresso K-Ultra manual coffee grinder", why: "Hand grinder with an outside dial. Pour over to espresso in one turn." },
   "weber-eg1":          { name: "Weber Workshops EG-1", q: "Weber Workshops EG-1 coffee grinder", why: "80mm flat burr single dose grinder for espresso and filter." },
+  "breville-barista-express": { name: "Breville Barista Express", q: "Breville Barista Express BES870XL", why: "Espresso machine with a built-in grinder. The most common home setup." },
+  "breville-barista-pro": { name: "Breville Barista Pro", q: "Breville Barista Pro BES878", why: "Faster heat-up and a finer grind range than the Express." },
+  "aeropress":          { name: "AeroPress", q: "AeroPress Original coffee maker", why: "Cheap, tough and forgiving. Hard to make a bad cup." },
+  "french-press":       { name: "Espro P7 French press", q: "Espro P7 French press", why: "Double filter, so far less sludge in the cup." },
+  "hario-switch":       { name: "Hario Switch", q: "Hario Switch immersion dripper 02", why: "A V60 with a valve. Steep, then drain. Very consistent." },
+  "clever":             { name: "Clever Dripper", q: "Clever Coffee Dripper large", why: "Steep and drain in one cone. Simple and forgiving." },
+  "milk-pitcher":       { name: "Milk frothing pitcher", q: "stainless steel milk frothing pitcher 12 oz", why: "A 12 oz pitcher makes latte art and steaming much easier." },
   "niche-zero":         { name: "Niche Zero", q: "Niche Zero grinder", why: "Single dose grinder known for espresso with low retention." },
   "hario-v60":          { name: "Hario V60 dripper", q: "Hario V60 02 dripper", why: "The standard cone for pour over." },
   "chemex":             { name: "Chemex 6-cup", q: "Chemex 6 cup classic", why: "Thick filters for a very clean cup. Brew two cups or more." },
@@ -481,17 +662,19 @@ function gearLink(id) {
 const BEANS_LINK = () => LINKS.trade || "https://www.drinktrade.com/";
 
 /* ---------------- export for tests ---------------- */
-if (typeof module !== "undefined") module.exports = { ORIGINS, GRINDERS, FAMILIES, familyFor, grindFor, aidenRecipe, pourRecipe, espRecipe, gearLink, fmtSetting };
+if (typeof module !== "undefined") module.exports = { ORIGINS, GRINDERS, FAMILIES, familyFor, grindFor, aidenRecipe, pourRecipe, pressRecipe, espRecipe, gearLink, fmtSetting, DIAL, PRESS_BREWERS, POUR_STYLES };
 
 /* ---------------- page ---------------- */
 if (typeof document !== "undefined") (function () {
-  const MODE = document.body.dataset.mode; // aiden | pour | espresso
+  const MODE = document.body.dataset.mode; // aiden | pour | press | espresso
   const $ = id => document.getElementById(id);
   const esc = x => String(x).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
   const opt = (v, t, sel) => `<option value="${esc(v)}"${v === sel ? " selected" : ""}>${esc(t)}</option>`;
 
   const DEF = { origin: "ethiopia", region: "", process: "washed", varietal: "", roast: "light", age: "peak", decaf: "no", tw: "", notes: [],
-    grinder: MODE === "espresso" ? "baratza-encore-esp" : "fellow-ode-2", size: "single", dripper: "v60", cups: "1", basket: "unpressurized" };
+    grinder: MODE === "espresso" ? "baratza-encore-esp" : "fellow-ode-2", size: "single", dripper: "v60", cups: "1", basket: "unpressurized",
+    brewer: document.body.dataset.brewer || "frenchpress", style: "guide", drink: "straight", dose: "18" };
+  const readHash = () => { s = { ...DEF }; try { const h = new URLSearchParams(location.hash.slice(1)); h.forEach((v, k) => { if (k in DEF) s[k] = k === "notes" ? v.split(",").filter(x => FAMILIES[x]) : v; }); } catch (_) {} };
   let s = { ...DEF };
   try { const h = new URLSearchParams(location.hash.slice(1)); h.forEach((v, k) => { if (k in DEF) s[k] = k === "notes" ? v.split(",").filter(x => FAMILIES[x]) : v; }); } catch (_) {}
   if (!ORIGINS[s.origin]) s.origin = DEF.origin;
@@ -518,6 +701,9 @@ if (typeof document !== "undefined") (function () {
     if ($("dripper")) $("dripper").value = s.dripper;
     if ($("cups")) $("cups").value = s.cups;
     if ($("basket")) $("basket").value = s.basket;
+    ["brewer", "style", "drink", "dose"].forEach(k => { if ($(k)) $(k).value = s[k]; });
+    if ($("style")) $("style").closest("label").style.display = s.dripper === "v60" ? "" : "none";
+    document.querySelectorAll(".methods a").forEach(a => a.classList.toggle("on", a.dataset.m === (MODE === "press" ? (s.brewer === "aeropress" ? "aeropress" : "frenchpress") : MODE)));
   }
 
   function table(rows) { return `<table class="rt">${rows.map(r => `<tr><th>${esc(r[0])}</th><td>${esc(r[1])}</td></tr>`).join("")}</table>`; }
@@ -526,11 +712,12 @@ if (typeof document !== "undefined") (function () {
   }
 
   function render() {
-    const R = MODE === "aiden" ? aidenRecipe(s) : MODE === "pour" ? pourRecipe(s) : espRecipe(s);
+    stopTimer();
+    const R = MODE === "aiden" ? aidenRecipe(s) : MODE === "pour" ? pourRecipe(s) : MODE === "press" ? pressRecipe(s) : espRecipe(s);
     const g = GRINDERS[s.grinder];
     const o = ORIGINS[s.origin];
     const title = `${s.region ? s.region + ", " : ""}${o.name}. ${PROC_NAME[s.process]}, ${ROASTS[s.roast].toLowerCase()} roast`;
-    let html = `<div class="res-head"><div><div class="eyebrow">${MODE === "aiden" ? `Profile name: ${esc(R.name)}` : MODE === "pour" ? esc(R.dripper) : "Espresso"}</div><h2>${esc(title)}</h2>
+    let html = `<div class="res-head"><div><div class="eyebrow">${MODE === "aiden" ? `Profile name: ${esc(R.name)}` : R.dripper ? esc(R.dripper) : "Espresso"}</div><h2>${esc(title)}</h2>
       <p class="fam">Building toward <b>${esc(FAMILIES[R.fam].name.toLowerCase())}</b>. ${esc(R.why)}</p></div>
       <button class="btn" type="button" id="share">Copy link</button></div>`;
     html += R.sections ? R.sections.map(x => `<h3 class="rt-h">${esc(x.title)}</h3>` + table(x.rows)).join("") : table(R.rows);
@@ -539,16 +726,18 @@ if (typeof document !== "undefined") (function () {
       if (gr.blade || gr.none) html += `<div class="callout warn"><b>${esc(gr.text)}</b> ${esc(gr.note || "")}</div>`;
       else html += `<p class="gnote"><b>${esc(g.name)}:</b> ${esc(gr.note)}${gr.warn ? " You picked an unpressurized basket, so expect a fast, sour shot until you upgrade the grinder." : ""} <a href="grind/${esc(s.grinder)}">All ${esc(g.name)} settings</a></p>`;
     }
-    if (R.steps) html += `<h3>Pour schedule</h3><ol class="steps2">${R.steps.map(x => `<li><b>${esc(x[0])}</b> ${esc(x[1])}</li>`).join("")}</ol>`;
+    if (R.steps) html += `<div class="timer-head"><h3>${MODE === "press" ? "Steps" : "Pour schedule"}</h3><div class="timer"><span id="clock">0:00</span><button type="button" class="btn primary" id="tStart">Start timer</button><button type="button" class="btn" id="tReset">Reset</button></div></div>
+      <ol class="steps2" id="steps">${R.steps.map(x => `<li data-at="${toSec(x[0])}"><b>${esc(x[0])}</b> ${esc(x[1])}</li>`).join("")}</ol><p class="hint" id="tNext"></p>`;
     if (R.method === "espresso") html += `<h3>How to dial it in</h3><p>Start the timer when you press start, so pre-infusion counts toward the time. Pull the shot and stop at <b>${R.out} g</b>. If it took much less than ${R.time} seconds, go one step finer. Much more, one step coarser. Change one thing per shot.</p>`;
     if (R.why2.length) html += `<h3>Why these numbers</h3><ul class="why">${R.why2.map(x => `<li><b>${esc(x[0])}.</b> ${esc(x[1])}</li>`).join("")}</ul>`;
     html += `<h3>Taste for this</h3><ul class="why">${R.taste.map(x => `<li>${esc(x)}</li>`).join("")}</ul>`;
-    if (R.method === "aiden") {
+    if (R.tweaks) {
+      const B = R.dial ? DIAL[R.dial] : TWEAKS, unit = MODE === "espresso" ? "shot" : "cup";
       html += `<div class="dial" id="dial"><h3>Dial it in for your bag</h3>
-        <p>Brew it, taste it, then tap what you noticed. Each tap changes one setting and updates the profile above, in the order a barista would try it.</p>
-        <div class="dial-btns">${Object.entries(TWEAKS).map(([k, v]) => `<button type="button" class="chip" data-tw="${k}" title="${esc(v[1])}">${esc(v[0])}</button>`).join("")}</div>`;
+        <p>${MODE === "espresso" ? "Pull the shot, taste it, then tap what you noticed." : "Brew it, taste it, then tap what you noticed."} Each tap changes one setting and updates the recipe above, in the order a barista would try it.</p>
+        <div class="dial-btns">${Object.entries(B).map(([k, v]) => `<button type="button" class="chip" data-tw="${k}" title="${esc(v[1])}">${esc(v[0])}</button>`).join("")}</div>`;
       if (R.tweaks.length) {
-        html += `<ol class="dial-log">${R.tweaks.map(x => `<li><b>After cup ${x.cup}: ${esc(x.label.toLowerCase())}.</b> Changed: ${esc(x.did)}. <span>${esc(TWEAKS[x.k][1])}</span></li>`).join("")}</ol>
+        html += `<ol class="dial-log">${R.tweaks.map(x => `<li><b>After ${unit} ${x.cup}: ${esc(x.label.toLowerCase())}.</b> Changed: ${esc(x.did)}. <span>${esc(B[x.k][1])}</span></li>`).join("")}</ol>
           <p class="hint">Changes are saved in this page's link. Copy the link to keep this bag's profile.</p>
           <div class="dial-act"><button type="button" class="btn" data-tw-undo>Undo last</button><button type="button" class="btn" data-tw-reset>Start over</button></div>`;
       } else html += `<p class="hint">Tasted great? Leave it. You're dialed in.</p>`;
@@ -566,7 +755,8 @@ if (typeof document !== "undefined") (function () {
     else if (gr.warn) gear = ["baratza-encore-esp", "fellow-opus-2", "breville-sgp"];
     const base = MODE === "aiden" ? ["fellow-aiden", "fellow-ode-2", "fellow-opus-2", "baratza-encore-esp", "scale", "oxo-8717000"]
       : MODE === "pour" ? ["hario-v60", "stagg-ekg", "scale", "comandante-c40", "fellow-ode-2", "kalita"]
-      : ["bambino", "baratza-encore-esp", "niche-zero", "wdt", "scale", "fellow-opus-2"];
+      : MODE === "press" ? [(PRESS_BREWERS[s.brewer] || {}).gear, "aeropress", "french-press", "hario-switch", "baratza-encore", "scale"]
+      : ["bambino", "breville-barista-express", "baratza-encore-esp", "niche-zero", "wdt", ["latte", "cappuccino", "flatwhite"].includes(s.drink) ? "milk-pitcher" : "scale"];
     const ids = [...new Set(gear.concat(base))].filter(i => i !== s.grinder).slice(0, 6);
     $("gear").innerHTML = gearCard(ids, gear.length ? "Upgrades that fix this" : "Gear for this recipe") +
       `<div class="beans"><div><b>Want more coffees like this one?</b><span>Trade matches you with roasters by flavor and ships beans fresh.</span></div><a class="btn primary" href="${esc(BEANS_LINK())}" target="_blank" rel="sponsored nofollow noopener" data-gear="trade">Find beans</a></div>`;
@@ -576,12 +766,24 @@ if (typeof document !== "undefined") (function () {
     history.replaceState(null, "", "#" + p.toString());
   }
 
+  function toSec(m) { const [a, b] = String(m).split(":").map(Number); return a * 60 + (b || 0); }
+  let tId = null, t0 = 0, tPaused = 0;
+  function stopTimer() { if (tId) clearInterval(tId); tId = null; tPaused = 0; }
+  function tick() {
+    const sec = Math.floor((Date.now() - t0) / 1000) + tPaused;
+    if ($("clock")) $("clock").textContent = `${Math.floor(sec / 60)}:${String(sec % 60).padStart(2, "0")}`;
+    const lis = [...document.querySelectorAll("#steps li")];
+    let cur = -1; lis.forEach((li, i) => { if (+li.dataset.at <= sec) cur = i; });
+    lis.forEach((li, i) => { li.classList.toggle("now", i === cur); li.classList.toggle("done", i < cur); });
+    const next = lis[cur + 1];
+    if ($("tNext")) $("tNext").textContent = next ? `Next step in ${+next.dataset.at - sec} seconds.` : "Last step. Enjoy the cup.";
+  }
   function count(path) { try { window.goatcounter && window.goatcounter.count({ path, event: true }); } catch (_) {} }
 
   document.addEventListener("change", e => {
     const id = e.target.id; if (!(id in DEF)) return;
     s[id] = e.target.value;
-    if (["origin", "region", "process", "varietal", "age"].includes(id)) s.tw = "";
+    if (["origin", "region", "process", "varietal", "age", "brewer", "style", "dripper"].includes(id)) s.tw = "";
     if (id === "origin") { s.region = ""; s.process = ORIGINS[s.origin].procs[0]; }
     fillSelects(); render();
   });
@@ -592,6 +794,11 @@ if (typeof document !== "undefined") (function () {
     if (e.target.closest("[data-tw-reset]")) { s.tw = ""; render(); return; }
     const n = e.target.closest("[data-note]");
     if (n) { const k = n.dataset.note; s.notes = s.notes.includes(k) ? s.notes.filter(x => x !== k) : s.notes.concat(k).slice(-2); fillSelects(); render(); return; }
+    if (e.target.id === "tStart") {
+      if (tId) { const p0 = tPaused + Math.floor((Date.now() - t0) / 1000); clearInterval(tId); tId = null; tPaused = p0; e.target.textContent = "Resume"; return; }
+      t0 = Date.now(); tId = setInterval(tick, 250); tick(); e.target.textContent = "Pause"; count("timer-" + MODE); return;
+    }
+    if (e.target.id === "tReset") { stopTimer(); if ($("clock")) $("clock").textContent = "0:00"; if ($("tStart")) $("tStart").textContent = "Start timer"; document.querySelectorAll("#steps li").forEach(li => li.classList.remove("now", "done")); if ($("tNext")) $("tNext").textContent = ""; return; }
     if (e.target.id === "share") { navigator.clipboard && navigator.clipboard.writeText(location.href).then(() => { e.target.textContent = "Copied"; setTimeout(() => e.target.textContent = "Copy link", 1500); }); count("share-" + MODE); return; }
     if (e.target.id === "fbSend") {
       const type = $("fbType").value, txt = $("fbText").value.trim(), email = $("fbEmail").value.trim();
@@ -610,5 +817,6 @@ if (typeof document !== "undefined") (function () {
     const g = e.target.closest("[data-gear]"); if (g) count("gear-" + g.dataset.gear + "-" + MODE);
   });
 
+  window.addEventListener("hashchange", () => { const want = new URLSearchParams(location.hash.slice(1)); const cur = new URLSearchParams(); Object.keys(DEF).forEach(k => { const v = k === "notes" ? s.notes.join(",") : s[k]; if (v && v !== DEF[k]) cur.set(k, v); }); if (want.toString() === cur.toString()) return; readHash(); if (!ORIGINS[s.origin]) s.origin = DEF.origin; if (!GRINDERS[s.grinder]) s.grinder = DEF.grinder; fillSelects(); render(); });
   fillSelects(); render();
 })();
