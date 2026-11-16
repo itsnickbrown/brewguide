@@ -21,3 +21,5 @@ table.gt td{font-weight:600}
 .gcard{background:#f6eee3;border-radius:14px;padding:14px 16px;color:var(--ink);display:flex;flex-direction:column;gap:3px}
 .gcard:hover{text-decoration:none;background:#efe2d1}
 .gcard b{font-size:16px}.gcard span{font-size:13px;color:var(--muted)}
+.gswitch{display:inline-flex;white-space:nowrap;align-items:center;gap:10px;margin-top:16px;font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--turq,#1f8a86)}
+.gswitch select{font:inherit;font-size:16px;text-transform:none;letter-spacing:0;font-weight:500;color:var(--ink);padding:9px 12px;border:1px solid var(--line);border-radius:12px;background:#fffdf9;max-width:240px}

@@ -19,8 +19,9 @@ for (const id of ids) {
     return `<div class="gm"><div class="gm-h">${esc(label)}</div><div class="gm-r">${cells.map((c, i) => `<div><span>${ROASTS[i][1]}</span><b>${esc(short(c))}</b></div>`).join("")}</div></div>`;
   }).join("");
   const espresso = g.base.espresso != null;
-  const title = `${g.name} Grind Settings for Pour Over${espresso ? ", Espresso" : ""} and Fellow Aiden | Brew Guide`;
-  const desc = `Where to set your ${g.name} for V60, Kalita, Chemex${espresso ? ", espresso" : ""} and the Fellow Aiden, by roast level. Starting points from the maker's own guide.`;
+  const realEsp = espresso && !g.pressurizedOnly;
+  const title = `${g.name} Grind Settings for Pour Over${realEsp ? ", Espresso" : ""} and Fellow Aiden | Brew Guide`;
+  const desc = `Where to set your ${g.name} for V60, Kalita, Chemex${realEsp ? ", espresso" : ""} and the Fellow Aiden, by roast level. Starting points from the maker's own guide.`;
   const url = `https://brewguide.pages.dev/grind/${id}`;
   const others = Object.keys(B.GRINDERS).filter(k => k !== id && !B.GRINDERS[k].blade)
     .map(k => `<a href="${k}">${esc(B.GRINDERS[k].name)}</a>`).join("");
@@ -29,13 +30,14 @@ for (const id of ids) {
 <link rel="canonical" href="${url}">
 <meta property="og:type" content="article"><meta property="og:site_name" content="Brew Guide"><meta property="og:title" content="${esc(title)}"><meta property="og:url" content="${url}">
 ${css}
-<link rel="stylesheet" href="../grind.css?v=2">
+<link rel="stylesheet" href="../grind.css?v=3">
 </head>
 <body><nav class="nav"><div class="in"><a class="brand" href="../" style="text-decoration:none">Brew Guide</a>
 <div class="links"><a href="../"><span class="sm-hide">Fellow </span>Aiden</a><a href="../pour-over">Pour over</a><a href="../espresso">Espresso</a><a href="./" class="on">Grinders</a></div></div></nav>
 <main class="wrap">
 <header class="ph"><div class="eyebrow">Grind settings</div><h1>${esc(g.name)}</h1>
-<p>Where to set your ${esc(g.name)} for pour over${espresso ? ", espresso" : ""} and the Fellow Aiden, by roast level. These are starting points. Your coffee and your taste decide the rest.</p></header>
+<p>Where to set your ${esc(g.name)} for pour over${realEsp ? ", espresso" : ""} and the Fellow Aiden, by roast level. These are starting points. Your coffee and your taste decide the rest.</p>
+<label class="gswitch">Switch grinder <select onchange="if(this.value)location.href=this.value">${Object.keys(B.GRINDERS).filter(k => !B.GRINDERS[k].blade).map(k => `<option value="${k}"${k === id ? " selected" : ""}>${esc(B.GRINDERS[k].name)}</option>`).join("")}</select></label></header>
 <div class="tool">
 <h2 class="sec">Starting settings</h2>
 <div class="gms">${rows}</div>
@@ -70,7 +72,7 @@ fs.writeFileSync(path.join(ROOT, "grind", "index.html"), `<!DOCTYPE html><html l
 <title>${ititle}</title><meta name="description" content="Starting grind settings for ${all.length} popular grinders, by brew method and roast level. Fellow, Baratza, OXO, Breville, Comandante, Timemore, 1Zpresso, Niche and Weber.">
 <link rel="canonical" href="https://brewguide.pages.dev/grind/">
 ${css}
-<link rel="stylesheet" href="../grind.css?v=2">
+<link rel="stylesheet" href="../grind.css?v=3">
 </head>
 <body><nav class="nav"><div class="in"><a class="brand" href="../" style="text-decoration:none">Brew Guide</a>
 <div class="links"><a href="../"><span class="sm-hide">Fellow </span>Aiden</a><a href="../pour-over">Pour over</a><a href="../espresso">Espresso</a><a href="./" class="on">Grinders</a></div></div></nav>
