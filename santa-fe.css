@@ -10,7 +10,7 @@
 .nav{background:rgba(250,243,233,.92);border-bottom:0}
 .nav::after{content:"";display:block;height:6px;background:
   repeating-linear-gradient(90deg,var(--accent) 0 28px,var(--gold) 28px 40px,var(--turq) 40px 68px,var(--sand,#f5ede1) 68px 74px,var(--chile) 74px 90px,var(--sage) 90px 112px)}
-.nav .brand{color:var(--chile);letter-spacing:.01em}
+.nav .brand{color:var(--ink);letter-spacing:.01em}
 .nav .links a{color:var(--muted)}
 .nav .links a.on{color:var(--accent-ink)}
 /* page header */
