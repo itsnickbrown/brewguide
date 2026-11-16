@@ -1,0 +1,41 @@
+/* Santa Fe palette: adobe, terracotta, turquoise, sand, sage, chile red, sun gold. */
+:root{
+  --ink:#3a2a20;--muted:#76604f;--soft:#9a8572;--line:#e2d3bf;--bg:#f5ede1;--card:#fffaf3;
+  --accent:#b8532f;--accent-ink:#9c4424;--accent-soft:#f6e2d6;
+  --turq:#1f8a86;--turq-soft:#dcefed;--sage:#8a9a6e;--gold:#d9a441;--chile:#9e2b25;
+  --shadow:0 2px 12px rgba(90,58,40,.06),0 12px 40px rgba(90,58,40,.08);
+}
+::selection{background:#f2c9a8}
+/* nav: warm sand with a woven stripe underneath */
+.nav{background:rgba(250,243,233,.92);border-bottom:0}
+.nav::after{content:"";display:block;height:6px;background:
+  repeating-linear-gradient(90deg,var(--accent) 0 28px,var(--gold) 28px 40px,var(--turq) 40px 68px,var(--sand,#f5ede1) 68px 74px,var(--chile) 74px 90px,var(--sage) 90px 112px)}
+.nav .brand{color:var(--chile);letter-spacing:.01em}
+.nav .links a{color:var(--muted)}
+.nav .links a.on{color:var(--accent-ink)}
+/* page header */
+.ph .eyebrow{color:var(--turq);text-transform:uppercase;font-size:13px;letter-spacing:.14em}
+.ph h1{color:var(--ink)}
+.ph::after{content:"";display:block;width:120px;height:10px;margin:18px auto 0;background:
+  linear-gradient(135deg,transparent 33%,var(--accent) 33% 66%,transparent 66%) 0 0/20px 10px repeat-x}
+.ph .hint strong{color:var(--accent-ink)}
+.ph .hint a{color:var(--turq);font-weight:600}
+/* controls */
+.tool h2.sec{color:var(--turq)}
+.segmented{background:#efe2d1}
+.chip.on{background:var(--accent);color:#fff;box-shadow:none}
+.notes .chip{background:#efe2d1}
+.notes .chip.on{background:var(--turq)}
+.form select,.fb-form select,.fb-form textarea,.fb-form input{border-color:var(--line);background:#fffdf9}
+.btn.primary{background:var(--accent);border-color:var(--accent)}
+.btn.primary:hover{background:var(--accent-ink)}
+/* results */
+.res-head .eyebrow{color:var(--turq)}
+h3.rt-h{color:var(--accent-ink)}
+table.rt th,table.rt td{border-bottom-color:#efe4d6}
+table.rt:last-of-type tr:last-child td{color:var(--chile)}
+.gnote,.gear .g,table.fix{background:#f6eee3}
+.dial{background:var(--turq-soft);border-color:#b9dcd9}
+.dial h3{color:var(--turq)}
+.dial .chip{background:#fff;border-color:#b9dcd9}
+.beans{background:var(--accent-soft)}
