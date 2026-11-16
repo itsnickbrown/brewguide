@@ -60,6 +60,7 @@ ${g.espressoOnly ? `<li><b>Fast, sour shot?</b> One step finer. <b>Slow, bitter 
 <div class="tool"><h2 class="sec">Other grinders</h2><div class="glist">${others}</div></div>
 </main><footer><div class="wrap">Built by Nick Brown. Grind settings come from each maker's own guide. Recipes are starting points, so taste and adjust.</div></footer>
 <script data-goatcounter="https://brewguide.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+<script src="../menu.js?v=1"></script>
 </body></html>
 `;
   fs.writeFileSync(path.join(ROOT, "grind", id + ".html"), html);
@@ -85,6 +86,7 @@ ${NAV}</div></nav>
 <div class="tool"><div class="gcards">${cards}</div></div>
 </main><footer><div class="wrap">Built by Nick Brown. Grind settings come from each maker's own guide. Recipes are starting points, so taste and adjust.</div></footer>
 <script data-goatcounter="https://brewguide.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+<script src="../menu.js?v=1"></script>
 </body></html>
 `);
 console.log("wrote grind/index.html");

@@ -42,3 +42,7 @@ table.rt:last-of-type tr:last-child td{color:var(--chile)}
 .nav .brand,.nav .links a{white-space:nowrap}
 @media(max-width:520px){.nav .in{padding:0 14px;gap:10px}.nav .links{gap:11px;font-size:12px}.nav .brand{font-size:16px}}
 @media(max-width:400px){.nav .sm-hide{display:none}}
+.nav .links .menu-pop a{white-space:normal}
+.nav .menu-pop{right:-70px;width:min(270px,calc(100vw - 24px));box-sizing:border-box}
+.nav .menu-pop b,.nav .menu-pop span{display:block;overflow-wrap:anywhere}
+@media(max-width:520px){.nav .menu-pop{position:fixed;right:12px;left:auto;top:62px}}
