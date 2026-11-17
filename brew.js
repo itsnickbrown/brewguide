@@ -154,6 +154,12 @@ const GRINDERS = {
     base: { aidenSingle: 16, aidenBatch: 18, v60: 15, kalita: 16, chemex: 20, espresso: 8 , aeropress: 12, frenchpress: 28},
     espressoNote: "Baratza lists 8 as an espresso start, but the Virtuoso+ is a filter grinder. Use a pressurized basket.",
     pressurizedOnly: true, fmt: "int", note: "Same starting points as the Encore: V60 15, drip 18, Chemex 20.", buy: "baratza-virtuoso" },
+  "baratza-vario-steel": { name: "Baratza Vario W+ / Forte BG (steel burrs)", unit: "setting", min: 12, max: 140, step: 1, roastStep: { espresso: 2, other: 4 }, micro: 2,
+    base: { aidenSingle: 68, aidenBatch: 92, v60: 72, kalita: 78, chemex: 96, espresso: 28, aeropress: 48, frenchpress: 120 },
+    fmt: "vario", note: "Read it as macro number plus micro letter, so 5M means macro 5, micro M. Baratza's steel burr chart: espresso 1Q, AeroPress 3M, V60 5M, drip 6M, Chemex 7M, French press 9M. About 12 micro letters equal one macro step. Steel burrs may need a finer calibration for espresso. The Forte manual's chart runs about one macro coarser, so if your Forte BG reads coarse, start a macro finer.", buy: "baratza-vario-w-plus" },
+  "baratza-vario-ceramic": { name: "Baratza Vario+ / Forte AP (ceramic burrs)", unit: "setting", min: 12, max: 140, step: 1, roastStep: { espresso: 2, other: 4 }, micro: 2,
+    base: { aidenSingle: 80, aidenBatch: 102, v60: 84, kalita: 90, chemex: 120, espresso: 40, aeropress: 60, frenchpress: 132 },
+    fmt: "vario", note: "Read it as macro number plus micro letter, so 6M means macro 6, micro M. Baratza's ceramic burr chart: espresso 2Q, AeroPress 4M, V60 6M, drip 7M, Chemex 9M, French press 10M. About 12 micro letters equal one macro step. Ceramic burrs are Baratza's pick for espresso. Use the micro lever for espresso and the macro lever for big moves.", buy: "baratza-vario-plus" },
   "oxo-8717000": { name: "OXO Brew Conical Burr (8717000)", unit: "setting", min: 1, max: 15, step: 0.5, roastStep: 1, micro: 0.5,
     base: { aidenSingle: 10, aidenBatch: 11, v60: 9, kalita: 9.5, chemex: 10, espresso: null , aeropress: 6.5, frenchpress: 14},
     fmt: "oxo", note: "15 numbers with micro positions between them. Twist the hopper for micro moves. OXO's manual puts pour over and drip at 6 to 10.", buy: "oxo-8717000" },
@@ -172,6 +178,9 @@ const GRINDERS = {
   "1zpresso-k-ultra": { name: "1Zpresso K-Ultra", unit: "setting", min: 0, max: 15, step: 0.1, roastStep: { espresso: 0.2, other: 0.4 }, micro: 0.1,
     base: { aidenSingle: 7.8, aidenBatch: 8.6, v60: 7.5, kalita: 8, chemex: 8.8, espresso: 2.6 , aeropress: 5.5, frenchpress: 10.5},
     fmt: "kultra", note: "Read it as number.click on the outer dial, so 7.5 means the dot on 7 plus 5 clicks. Each click is 20 microns. Common starting points are about 2.5 for espresso and 7 to 9.5 for pour over.", buy: "1zpresso-k-ultra" },
+  "1zpresso-zp6": { name: "1Zpresso ZP6 Special", unit: "setting", min: 0, max: 9, step: 0.1, roastStep: { espresso: 0.2, other: 0.3 }, micro: 0.1,
+    base: { aidenSingle: 4.6, aidenBatch: 5.8, v60: 4.8, kalita: 5.1, chemex: 5.6, espresso: null, aeropress: 3.8, frenchpress: 7 },
+    fmt: "kultra", note: "Read it as number.click on the outside dial, so 4.8 means the dot on 4 plus 8 clicks. Ten clicks per number. 1Zpresso built the ZP6 for pour over, not espresso. Readers report most pour overs land between 4.5 and 5, and the 2023 World Brewers Cup winner used 5.2.", buy: "1zpresso-zp6" },
   "weber-eg1": { name: "Weber Workshops EG-1", unit: "numbers past burr lock", min: 0, max: 28, step: 0.2, roastStep: { espresso: 0.5, other: 1 }, micro: 0.2,
     base: { aidenSingle: 11, aidenBatch: 13, v60: 10.5, kalita: 11.5, chemex: 13, espresso: 5.5 , aeropress: 8, frenchpress: 18},
     fmt: "eg1", note: "The EG-1 has no fixed zero, so count from burr lock: close the burrs until they just touch, note that number, then add the setting shown. Each tick is 5 microns. Settings assume the CORE burrs. With ULTRA burrs, start a couple of numbers coarser for filter.", buy: "weber-eg1" },
@@ -203,9 +212,10 @@ function fmtSetting(g, v) {
   if (g.fmt === "eg1") return `${(Math.round(r * 5) / 5).toFixed(1)} numbers past burr lock`;
   if (g.fmt === "kultra") { const v = Math.round(r * 10) / 10; return v >= 10 ? `1 full turn, then ${(v - 10).toFixed(1)}` : v.toFixed(1); }
   if (g.fmt === "clicks") return `${Math.round(r)} clicks`;
+  if (g.fmt === "vario") { const n = Math.round(r); const mac = Math.min(10, Math.max(1, Math.round(n / 12) - 1)); const L = Math.min(25, Math.max(0, n - mac * 12)); return `${mac}${String.fromCharCode(65 + L)}`; }
   return `${Math.round(r)}`;
 }
-function microWord(g) { return g.fmt === "oxo" ? "one micro step" : g.fmt === "ode" ? "one notch" : g.unit === "clicks" ? "one click" : g.fmt === "dec" ? `${g.micro} on the dial` : "one setting"; }
+function microWord(g) { return g.fmt === "oxo" ? "one micro step" : g.fmt === "vario" ? "two micro letters" : g.fmt === "ode" ? "one notch" : g.unit === "clicks" ? "one click" : g.fmt === "dec" ? `${g.micro} on the dial` : "one setting"; }
 
 /* Grind for a method. Returns {text, value, note} or {none:true,...}. */
 function grindFor(gid, method, s, fam, extraMicro = 0) {
@@ -637,6 +647,9 @@ const GEAR = {
   "timemore-c2":        { name: "Timemore Chestnut C2", q: "Timemore Chestnut C2 manual grinder", why: "Best value hand grinder for pour over and French press." },
   "timemore-078s":      { name: "Timemore Sculptor 078S", q: "Timemore Sculptor 078S electric coffee grinder", why: "78mm flat burr grinder that handles espresso and pour over, with adjustable RPM." },
   "1zpresso-k-ultra":   { name: "1Zpresso K-Ultra", q: "1Zpresso K-Ultra manual coffee grinder", why: "Hand grinder with an outside dial. Pour over to espresso in one turn." },
+  "baratza-vario-w-plus": { name: "Baratza Vario W+", q: "Baratza Vario W+ grinder", why: "54mm steel flat burrs with a built-in scale. Strong for pour over." },
+  "baratza-vario-plus": { name: "Baratza Vario+", q: "Baratza Vario+ grinder", why: "54mm ceramic flat burrs with macro and micro steps. Handles espresso and filter." },
+  "1zpresso-zp6":       { name: "1Zpresso ZP6 Special", q: "1Zpresso ZP6 Special manual coffee grinder", why: "Hand grinder built for pour over clarity, with an outside dial." },
   "weber-eg1":          { name: "Weber Workshops EG-1", q: "Weber Workshops EG-1 coffee grinder", why: "80mm flat burr single dose grinder for espresso and filter." },
   "breville-barista-express": { name: "Breville Barista Express", q: "Breville Barista Express BES870XL", why: "Espresso machine with a built-in grinder. The most common home setup." },
   "breville-barista-pro": { name: "Breville Barista Pro", q: "Breville Barista Pro BES878", why: "Faster heat-up and a finer grind range than the Express." },
