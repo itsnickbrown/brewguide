@@ -184,6 +184,9 @@ const GRINDERS = {
   "femobook-a2": { name: "Femobook A2", unit: "clicks", min: 0, max: 120, step: 1, roastStep: { espresso: 2, other: 4 }, micro: 2,
     base: { aidenSingle: 56, aidenBatch: 66, v60: 58, kalita: 62, chemex: 70, espresso: null, aeropress: 45, frenchpress: 88 },
     fmt: "clicks", note: "Count clicks from zero (burrs just touching) on the dial under the burr. 40 clicks is one full turn. Femobook doesn't publish a chart, so these come from owner reports: pour over around 50 to 80 and AeroPress around 40 to 50. Reviewers call it a pour over grinder, not an espresso grinder.", buy: "femobook-a2" },
+  "kingrinder-k6": { name: "KINGrinder K6", unit: "clicks", min: 0, max: 240, step: 1, roastStep: { espresso: 2, other: 5 }, micro: 2,
+    base: { aidenSingle: 88, aidenBatch: 100, v60: 90, kalita: 95, chemex: 105, espresso: 40, aeropress: 65, frenchpress: 125 },
+    fmt: "clicks", note: "Count clicks from zero on the outside dial (turn it until it stops at 0). 60 clicks is one full turn, about 16 microns per click. KINGrinder's own chart: espresso 40, Moka pot and AeroPress 60 to 70, pour over 100, French press 120.", buy: "kingrinder-k6" },
   "1zpresso-k-ultra": { name: "1Zpresso K-Ultra", unit: "setting", min: 0, max: 15, step: 0.1, roastStep: { espresso: 0.2, other: 0.4 }, micro: 0.1,
     base: { aidenSingle: 7.8, aidenBatch: 8.6, v60: 7.5, kalita: 8, chemex: 8.8, espresso: 2.6 , aeropress: 5.5, frenchpress: 10.5},
     fmt: "kultra", note: "Read it as number.click on the outer dial, so 7.5 means the dot on 7 plus 5 clicks. Each click is 20 microns. Common starting points are about 2.5 for espresso and 7 to 9.5 for pour over.", buy: "1zpresso-k-ultra" },
@@ -354,7 +357,7 @@ function tasteChecks(fam) {
     citrus: ["The acidity should be juicy, not sour. Juicy makes your mouth water in a good way.", "Check for sweetness under the brightness as it cools."],
     stone:  ["It should taste sweet first, then fruity. If it's tart before sweet, it's under-extracted.", "Taste again as it cools. The fruit should get rounder, not sharper."],
     berry:  ["The fruit should be clear, like you can name it. If it's a vague sweet blur, there's too much agitation.", "A little winey is fine. Boozy or vinegar is too far."],
-    choc:   ["Look for a sweet, round middle and a clean finish.", "If it finishes dry or chalky, it went too far."],
+    choc:   ["Look for a sweet, round middle and a clean finish.", "If it finishes dry or astringent, it went too far."],
     heavy:  ["Body should feel thick and syrupy, not muddy.", "The finish should be sweet. Bitterness that lingers means too much extraction."],
     roasty: ["It should be bittersweet, like dark chocolate, not ashy.", "If it tastes like smoke or char, drop the temperature next time."],
   };
@@ -393,7 +396,7 @@ const TWEAKS = {
   bitter: ["Bitter or harsh", "Over-extracted. First a coarser grind, then less heat if it's still bitter."],
   thin:   ["Thin or watery", "Not enough coffee for the water. Tighten the ratio."],
   hollow: ["Hollow middle", "The bloom didn't fully wet the grounds. Bloom longer."],
-  dry:    ["Dry, chalky finish", "Too much agitation. Fewer pulses."],
+  dry:    ["Dry, astringent finish", "Mouth-drying, like strong black tea. Too much agitation, so fewer pulses."],
   flat:   ["Flat or dull", "Needs more energy. A bit more heat."],
 };
 const AIDEN_FIXES = [
@@ -401,7 +404,7 @@ const AIDEN_FIXES = [
   ["Thin, watery", "Ratio too wide", "Tighten the ratio by 0.5"],
   ["Hollow, empty middle", "Under-extracted", "Bloom to 40 seconds"],
   ["Bitter, harsh", "Over-extracted", "One grind step coarser"],
-  ["Dry, chalky finish", "Too much agitation", "Drop one pulse"],
+  ["Dry, astringent finish (mouth-drying)", "Too much agitation", "Drop one pulse"],
   ["Ashy, smoky", "Too hot for the roast", "Minus 4°F"],
   ["Flat, dull", "Under-developed or old coffee", "Plus 3°F"],
   ["Muddy", "Too much agitation", "Drop one pulse"],
@@ -421,6 +424,7 @@ const DRIPPERS = {
   v60:    { name: "Hario V60", grind: "v60", target: { 1: "2:45", 2: "3:15" } },
   kalita: { name: "Kalita Wave", grind: "kalita", target: { 1: "3:00", 2: "3:30" } },
   chemex: { name: "Chemex", grind: "chemex", target: { 1: "3:45", 2: "4:15" } },
+  pulsar: { name: "NextLevel Pulsar", grind: "chemex", target: { 1: "3:45", 2: "4:30" } },
 };
 const POUR_STYLES = {
   guide:    "Brew Guide (built for this coffee)",
@@ -449,6 +453,7 @@ function pourRecipe(s) {
     if (k === "flat") did = hot(3);
     tweaks.push({ cup: i + 1, k, label: DIAL.pour[k][0], did });
   });
+  if (s.dripper === "pulsar") return pulsarRecipe(s, fam, why, p, why2, tweaks, gAdj);
   if (style === "hoffmann") return hoffmannV60(s, fam, why, p, why2, tweaks, gAdj);
   if (style === "46") return tetsu46(s, fam, why, p, why2, tweaks, gAdj);
   const water = Math.round(dose * p.r);
@@ -470,6 +475,23 @@ function pourRecipe(s) {
   ];
   return { fam, why, why2: famWhy(fam, "pour").filter(x => x[0] !== "Pulses").concat(why2), rows, steps, grind: g,
     name: shortName(s, fam), taste: tasteChecks(fam), fixes: POUR_FIXES, method: "pour", dripper: d.name, tweaks, dial: "pour" };
+}
+function pulsarRecipe(s, fam, why, p, why2, tweaks, gAdj) {
+  const cups = s.cups === "2" ? 2 : 1;
+  const dose = cups === 2 ? 30 : 20, r = Math.max(15.5, p.r + 0.5), water = Math.round(dose * r);
+  const bloom = dose * 3, half = Math.round(bloom + (water - bloom) / 2);
+  // Coarser than hand pour: start one step coarser than the Chemex setting.
+  const g = grindFor(s.grinder, "chemex", s, fam, 1 + (cups === 2 ? 1 : 0) + gAdj);
+  const target = DRIPPERS.pulsar.target[cups];
+  const steps = [
+    ["0:00", `Dry paper, valve closed, coffee in, dispersion cap on. Pour ${bloom} g to bloom and swirl gently so every ground is wet.`],
+    ["0:45", `Open the valve fully. Pour to ${half} g, slow and steady, through the cap.`],
+    ["1:30", `Pour to ${water} g. Leave the valve open and don't stir.`],
+    [target, "Drawdown should finish around here. Much later means grind coarser or open the valve more. Much sooner means grind finer."],
+  ];
+  const rows = [["Coffee", `${dose} g`], ["Water", `${water} g (1:${r})`], ["Water temp", temp(p.t)], ["Target time", target], ["Grind", g.text]];
+  why2.unshift(["Method", "The Pulsar steeps the bloom with the valve closed, then drains like a flat-bottom pour over. It wants a coarser grind than a V60, between pour over and batch brew. This is a simple starting recipe, close to NextLevel's basic one."]);
+  return { fam, why, why2, rows, steps, grind: g, name: shortName(s, fam), taste: tasteChecks(fam), fixes: POUR_FIXES, method: "pour", dripper: "NextLevel Pulsar", tweaks, dial: "pour" };
 }
 function hoffmannV60(s, fam, why, p, why2, tweaks, gAdj) {
   const cups = s.cups === "2" ? 2 : 1;
@@ -658,6 +680,8 @@ const GEAR = {
   "timemore-078":       { name: "Timemore Sculptor 078", q: "Timemore Sculptor 078 electric coffee grinder", why: "78mm flat burrs tuned for filter clarity. Pour over and French press only." },
   "fiorenzato-pietro":  { name: "Fiorenzato Pietro", q: "Fiorenzato Pietro Pro Brew manual coffee grinder", why: "58mm flat burr hand grinder. The M-Modal burrs are built for pour over." },
   "femobook-a2":        { name: "Femobook A2", q: "Femobook A2 electric coffee grinder", why: "Small battery grinder shaped like a hand grinder. Good for pour over and travel." },
+  "kingrinder-k6":      { name: "KINGrinder K6", q: "KINGrinder K6 manual coffee grinder", why: "Budget hand grinder with an outside dial. Espresso to French press." },
+  "pulsar":             { name: "NextLevel Pulsar", q: "NextLevel Pulsar dripper", why: "Flat-bottom dripper with a valve. Steep the bloom, then let it drain." },
   "1zpresso-k-ultra":   { name: "1Zpresso K-Ultra", q: "1Zpresso K-Ultra manual coffee grinder", why: "Hand grinder with an outside dial. Pour over to espresso in one turn." },
   "baratza-vario-w-plus": { name: "Baratza Vario W+", q: "Baratza Vario W+ grinder", why: "54mm steel flat burrs with a built-in scale. Strong for pour over." },
   "baratza-vario-plus": { name: "Baratza Vario+", q: "Baratza Vario+ grinder", why: "54mm ceramic flat burrs with macro and micro steps. Handles espresso and filter." },
